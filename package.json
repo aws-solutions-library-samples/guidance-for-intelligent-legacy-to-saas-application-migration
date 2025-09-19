@@ -1,0 +1,18 @@
+{
+  "name": "guidance-for-intelligent-legacy-to-saas-application-migration",
+  "version": "1.0.0",
+  "author": "Patrick O'Connor & Ben Snyder",
+  "description": "A GenAI-powered guidance that accelerates platform migrations from source to target",
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm --filter webapp dev",
+    "build": "pnpm --filter webapp build && pnpm --filter infra cdk synth",
+    "graphql": "pnpm --filter webapp graphql",
+    "cdk": "pnpm --filter infra cdk"
+  },
+  "keywords": [
+    "bedrock",
+    "strands",
+    "agentcore"
+  ]
+}

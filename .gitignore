@@ -1,0 +1,26 @@
+*.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Logs
+logs
+*.log
+pnpm-debug.log*
+
+dist
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+!eslint.config.js
+!vite-env.d.ts
+.env
+
+# ACE Editor assets (auto-generated from node_modules)
+packages/webapp/public/ace/

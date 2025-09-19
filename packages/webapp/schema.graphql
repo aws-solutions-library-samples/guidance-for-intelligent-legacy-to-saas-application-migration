@@ -1,0 +1,142 @@
+type Select {
+  label: String!
+  value: String!
+}
+
+type Job {
+  jobId: ID!
+  name: String
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  s3Uri: String
+  executionArn: String
+  codebuildArn: String
+  kb: Select
+  model: Select
+  agentcoreId: String
+}
+
+type JobConnection {
+  jobs: [Job!]
+  nextToken: String
+}
+
+input CreateJobInput {
+  jobId: ID
+  name: String
+  description: String
+}
+
+input SelectInput {
+  label: String
+  value: String
+}
+
+input UpdateJobInput {
+  jobId: ID
+  name: String
+  description: String
+  s3Uri: String
+  kb: SelectInput
+  model: SelectInput
+}
+
+type JobMetrics {
+  ItemCount: Int
+  ItemCountLastWeek: Float
+  TableSizeBytes: Int
+  TableSizeBytesLastWeek: Float
+}
+
+type AssessmentMetrics {
+  ExecutionsStartedLastWeek: Float
+}
+
+type DashboardMetrics {
+  jobs: JobMetrics
+  sfnAssessments: AssessmentMetrics
+  totalKbs: Int
+}
+
+type KnowledgeBaseSummary {
+  description: String
+  knowledgeBaseId: String
+  name: String
+  status: String
+  updatedAt: AWSDateTime!
+}
+
+type KnowledgeBaseConnection {
+  knowledgeBaseSummaries: [KnowledgeBaseSummary!]
+  nextToken: String
+}
+
+type InferenceProfile {
+  createdAt: String
+  description: String
+  inferenceProfileArn: String
+  inferenceProfileId: String
+  inferenceProfileName: String
+  models: [AWSJSON]
+  status: String
+  type: String
+  updatedAt: String
+}
+
+type InferenceProfileConnection {
+  inferenceProfileSummaries: [InferenceProfile!]
+  nextToken: String
+}
+
+input ToolCreationUpdateInput {
+  jobId: String!
+  type: String!
+  message: AWSJSON!
+  eventId: String!
+}
+
+type ToolCreationUpdate @aws_iam {
+  jobId: String!
+  type: String!
+  message: AWSJSON!
+  eventId: String!
+}
+
+type Query {
+  getJob(jobId: ID): Job
+  getCodeBuild(codebuildArn: String): AWSJSON
+  listJobs(limit: Int, nextToken: String): JobConnection
+
+  describeExecution(executionArn: String!): AWSJSON
+
+  listKnowledgeBases: KnowledgeBaseConnection
+  listInferenceProfiles: InferenceProfileConnection
+
+  getDashboardMetrics: DashboardMetrics
+}
+
+type Mutation {
+  createJob(input: CreateJobInput!): Job
+  updateJob(input: UpdateJobInput!): Job
+  deleteJob(jobId: String!): Job
+
+  startAssessment(jobId: String, streaming: Boolean): AWSJSON
+
+  createTool(
+    jobId: String
+    prompt: String
+    loadHistory: Boolean
+    saveTools: Boolean
+  ): AWSJSON
+  publishToolCreationUpdate(
+    input: ToolCreationUpdateInput!
+  ): ToolCreationUpdate @aws_iam
+
+  startDeployment(jobId: String): AWSJSON
+}
+
+type Subscription {
+  onToolCreationUpdate(jobId: String!): ToolCreationUpdate
+    @aws_subscribe(mutations: ["publishToolCreationUpdate"])
+}
