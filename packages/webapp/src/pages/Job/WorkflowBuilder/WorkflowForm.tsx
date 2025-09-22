@@ -156,6 +156,7 @@ python ${fileName}
                 >
                   <Textarea
                     {...field}
+                    onChange={({ detail }) => field.onChange(detail.value)}
                     name={`agents.${index}.system_prompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
                     rows={4}
@@ -175,15 +176,22 @@ python ${fileName}
         </Button>
 
         <ExpandableSection headerText="Assessment Schema">
-          <FormField
-            label="Output Schema"
-            description="Define the structure of the workflow output"
-          >
-            <Textarea
-              placeholder="Define the expected output format, data structure, or assessment criteria..."
-              rows={6}
-            />
-          </FormField>
+          <Controller
+            name="outputSchema"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                label="Output Schema"
+                description="Define the structure of the workflow output"
+              >
+                <Textarea
+                  {...field}
+                  placeholder="Define the expected output format, data structure, or assessment criteria..."
+                  rows={6}
+                />
+              </FormField>
+            )}
+          />
         </ExpandableSection>
 
         <Box float="right">
