@@ -22,6 +22,7 @@ import { BuildWorkflow } from "./BuildWorkflow";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { GetJobQuery } from "../../../API";
 import { Deployment } from "./Deployment";
+import { WorkflowForm } from "./WorkflowForm";
 
 interface IWorkflowBuilder {
   getJobQuery: UseQueryResult<GetJobQuery, Error>;
@@ -46,9 +47,14 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
     <>
       <SpaceBetween size="l">
         <Header
+          description={
+            !listS3.data?.items.length &&
+            "Start by first outlining the responsibilities of each agent, followed by the schema of the ouput table"
+          }
           variant="h3"
           actions={
             <ButtonDropdown
+              disabled={!!listS3.data?.items}
               onItemClick={({ detail }) => {
                 switch (detail.id) {
                   case "createTool":
@@ -106,12 +112,18 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
             )}
         </Box>
 
-        <CodeInput uri={resource.uri} />
+        {listS3.data?.items.length ? (
+          <CodeInput uri={resource.uri} />
+        ) : (
+          <WorkflowForm onWorkflowCreated={() => listS3.refetch()} />
+        )}
       </SpaceBetween>
-      {getJobQuery.data?.getJob?.codebuildArn && (
+
+      {listS3.data?.items.length && getJobQuery.data?.getJob?.codebuildArn && (
         <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
       )}
 
+      {/* Modals */}
       <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
       <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
       <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
