@@ -5,7 +5,6 @@ import {
   type SubmitHandler,
 } from "react-hook-form";
 import { useParams } from "react-router";
-import { useUploadS3Data } from "../../../hooks/useApi";
 import {
   Box,
   Button,
