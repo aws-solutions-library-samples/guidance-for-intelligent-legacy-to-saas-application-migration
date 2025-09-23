@@ -119,9 +119,10 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         )}
       </SpaceBetween>
 
-      {listS3.data?.items.length && getJobQuery.data?.getJob?.codebuildArn && (
-        <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
-      )}
+      {!!listS3.data?.items.length &&
+        getJobQuery.data?.getJob?.codebuildArn && (
+          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
+        )}
 
       {/* Modals */}
       <CreateTool createTool={createTool} setCreateTool={setCreateTool} />

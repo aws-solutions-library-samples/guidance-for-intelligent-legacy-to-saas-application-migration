@@ -13,11 +13,16 @@ import {
   Textarea,
   SpaceBetween,
   ExpandableSection,
+  Header,
+  Table,
+  Input,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
 
 interface WorkflowFormInput {
   agents: { system_prompt: string }[];
+  rowCategories: { name: string; description: string }[];
+  columnCategories: { name: string; description: string }[];
 }
 
 interface IWorkflowForm {
@@ -35,12 +40,24 @@ export const WorkflowForm = ({ onWorkflowCreated }: IWorkflowForm) => {
   } = useForm<WorkflowFormInput>({
     defaultValues: {
       agents: [],
+      rowCategories: [],
+      columnCategories: [],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const agents = useFieldArray({
     control,
     name: "agents",
+  });
+
+  const rowCategories = useFieldArray({
+    control,
+    name: "rowCategories",
+  });
+
+  const columnCategories = useFieldArray({
+    control,
+    name: "columnCategories",
   });
 
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
@@ -125,7 +142,7 @@ python ${fileName}
       toast.success("Workflow created successfully!");
       onWorkflowCreated();
     } catch (error) {
-      console.error("Error creating workflow:", error);
+      console.error(error);
       toast.error("Failed to create workflow");
     }
   };
@@ -134,7 +151,7 @@ python ${fileName}
     <form onSubmit={handleSubmit(onSubmit)}>
       <SpaceBetween size="l">
         {/* Dynamic Agent Sections */}
-        {fields.map((agent, index) => (
+        {agents.fields.map((agent, index) => (
           <ExpandableSection
             key={agent.id}
             headerText={`Agent ${index + 1}`}
@@ -142,7 +159,7 @@ python ${fileName}
               <Button
                 variant="icon"
                 iconName="close"
-                onClick={() => remove(index)}
+                onClick={() => agents.remove(index)}
               />
             }
           >
@@ -166,40 +183,135 @@ python ${fileName}
             />
           </ExpandableSection>
         ))}
-
         <Button
           formAction="none"
-          onClick={() => append({ system_prompt: "" })}
+          onClick={() => agents.append({ system_prompt: "" })}
           iconName="add-plus"
         >
           Add Agent
         </Button>
 
-        <ExpandableSection headerText="Assessment Schema">
-          <Controller
-            name="outputSchema"
-            control={control}
-            render={({ field }) => (
-              <FormField
-                label="Output Schema"
-                description="Define the structure of the workflow output"
-              >
-                <Textarea
-                  {...field}
-                  placeholder="Define the expected output format, data structure, or assessment criteria..."
-                  rows={6}
+        <Header>Assessment Schema</Header>
+
+        <ExpandableSection headerText={`Column Categories`}>
+          <SpaceBetween size="l">
+            {columnCategories.fields.map((row, index) => (
+              <>
+                <Controller
+                  name={`columnCategories.${index}.name`}
+                  control={control}
+                  render={({ field }) => (
+                    <FormField label={`Column ${index + 1}`}>
+                      <Input
+                        {...field}
+                        onChange={({ detail }) => field.onChange(detail.value)}
+                        placeholder={`Name...`}
+                      />
+                    </FormField>
+                  )}
                 />
-              </FormField>
-            )}
-          />
+                <Controller
+                  name={`columnCategories.${index}.description`}
+                  control={control}
+                  render={({ field }) => (
+                    <FormField>
+                      <Textarea
+                        {...field}
+                        onChange={({ detail }) => field.onChange(detail.value)}
+                        placeholder={`Description...`}
+                      />
+                    </FormField>
+                  )}
+                />
+              </>
+            ))}
+            <Button
+              formAction="none"
+              onClick={() =>
+                columnCategories.append({ name: "", description: "" })
+              }
+              iconName="add-plus"
+            >
+              Add
+            </Button>
+          </SpaceBetween>
         </ExpandableSection>
+
+        <ExpandableSection headerText={`Row Categories`}>
+          <SpaceBetween size="l">
+            {rowCategories.fields.map((row, index) => (
+              <>
+                <Controller
+                  name={`rowCategories.${index}.name`}
+                  control={control}
+                  render={({ field }) => (
+                    <FormField label={`Row ${index + 1}`}>
+                      <Input
+                        {...field}
+                        onChange={({ detail }) => field.onChange(detail.value)}
+                        placeholder={`Name...`}
+                      />
+                    </FormField>
+                  )}
+                />
+                <Controller
+                  name={`rowCategories.${index}.description`}
+                  control={control}
+                  render={({ field }) => (
+                    <FormField>
+                      <Textarea
+                        {...field}
+                        onChange={({ detail }) => field.onChange(detail.value)}
+                        placeholder={`Description...`}
+                      />
+                    </FormField>
+                  )}
+                />
+              </>
+            ))}
+            <Button
+              formAction="none"
+              onClick={() =>
+                rowCategories.append({ name: "", description: "" })
+              }
+              iconName="add-plus"
+            >
+              Add
+            </Button>
+          </SpaceBetween>
+        </ExpandableSection>
+
+        {rowCategories.fields.length && columnCategories.fields.length && (
+          <Table
+            header={<Header>Preview</Header>}
+            items={rowCategories.fields.map((field) => {
+              return {
+                key: field.id,
+                name: field.name,
+              };
+            })}
+            columnDefinitions={[
+              {
+                header: "",
+                cell: ({ name }) => name,
+              },
+              ...columnCategories.fields.map((field) => {
+                return {
+                  key: field.id,
+                  header: field.name,
+                  cell: () => null,
+                };
+              }),
+            ]}
+          />
+        )}
 
         <Box float="right">
           <Button
             variant="primary"
             formAction="submit"
             loading={isSubmitting || uploadS3Data.isPending}
-            disabled={!fields.length}
+            disabled={!agents.fields.length}
           >
             Create Workflow
           </Button>
