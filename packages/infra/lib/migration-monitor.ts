@@ -128,7 +128,7 @@ export class MigrationMonitor extends cdk.Stack {
       this,
       [
         `/${this.stackName}/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource`,
-        `/${this.stackName}/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource`,
+        // `/${this.stackName}/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource`,
       ],
       [
         {
@@ -140,16 +140,16 @@ export class MigrationMonitor extends cdk.Stack {
       true
     );
 
-    NagSuppressions.addResourceSuppressionsByPath(
-      this,
-      `/${this.stackName}/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource`,
-      [
-        {
-          id: "AwsSolutions-L1",
-          reason: "Upload lambda is fixed on a version",
-        },
-      ],
-      true
-    );
+    // NagSuppressions.addResourceSuppressionsByPath(
+    //   this,
+    //   `/${this.stackName}/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource`,
+    //   [
+    //     {
+    //       id: "AwsSolutions-L1",
+    //       reason: "Upload lambda is fixed on a version",
+    //     },
+    //   ],
+    //   true
+    // );
   }
 }

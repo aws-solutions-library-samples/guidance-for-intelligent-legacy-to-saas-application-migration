@@ -59,6 +59,7 @@ export type ToolCreationUpdate = {
 };
 
 export type CreateWorkflowInput = {
+  jobId?: string | null,
   agents?: Array< Agents | null > | null,
   rowCategories?: Array< Category | null > | null,
   columnCategories?: Array< Category | null > | null,

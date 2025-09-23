@@ -74,11 +74,5 @@ export class Storage extends Construct {
       serverAccessLogsBucket,
       enforceSSL: true,
     });
-
-    new s3deploy.BucketDeployment(this, "Workflow Template Deployment", {
-      sources: [s3deploy.Source.asset(__dirname + "/workflow_template")],
-      destinationBucket: this.uiStorageBucket,
-      destinationKeyPrefix: "workflow-template/",
-    });
   }
 }

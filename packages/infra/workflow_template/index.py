@@ -1,11 +1,9 @@
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
-from stylesheets.stylesheets_agent import stylesheets_agent
 from callbacks import trace, capture_flow_callback
-from bmide.bmide_agent import bmide_agent
 from strands.models import BedrockModel
 from agent_crawler import crawl_file
 from botocore.config import Config
-from strands import Agent
+from strands import Agent, tool
 import boto3
 import os
 
@@ -21,7 +19,9 @@ model = BedrockModel(
 )
 agent = Agent(
     callback_handler=capture_flow_callback("Orchestrator"),
-    tools=[framework_assessment_agent, dependencies_agent],
+    tools=[
+        # Place agents here
+    ],
     model=model,
 )
 
@@ -31,9 +31,7 @@ def invoke(payload):
     """Process user input and return a response"""
     crawl_file("index.py")
 
-    framework_assessment_response = agent.tool.stylesheets_agent(
-        s3_uri=os.environ["S3_URI"]
-    )
+    # Place agents here
 
     user_message = payload.get("prompt", "Hello")
     result = agent(user_message)

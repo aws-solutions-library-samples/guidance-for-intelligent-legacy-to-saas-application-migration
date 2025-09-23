@@ -38,6 +38,7 @@ input Category {
 }
 
 input CreateWorkflowInput {
+  jobId: String
   agents: [Agents]
   rowCategories: [Category]
   columnCategories: [Category]

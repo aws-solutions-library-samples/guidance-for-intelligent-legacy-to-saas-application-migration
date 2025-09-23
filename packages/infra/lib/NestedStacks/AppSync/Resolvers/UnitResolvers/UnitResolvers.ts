@@ -303,6 +303,15 @@ export class UnitResolvers extends Construct {
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.NODEJS_22_X,
       timeout: cdk.Duration.minutes(5),
+      bundling: {
+        commandHooks: {
+          beforeInstall: () => [],
+          beforeBundling: () => [],
+          afterBundling(inputDir, outputDir) {
+            return [`cp -r ${inputDir}/workflow_template ${outputDir}`];
+          },
+        },
+      },
       initialPolicy: [
         // new iam.PolicyStatement({
         //   actions: [
@@ -315,11 +324,14 @@ export class UnitResolvers extends Construct {
         //   actions: ["appsync:GraphQL"],
         //   resources: [`${this.graphqlApi.arn}/*`],
         // }),
-        // new iam.PolicyStatement({
-        //   actions: ["s3:PutObject", "s3:GetObject"],
-        //   resources: [this.uiStorageBucket.arnForObjects(`jobs/*`)],
-        // }),
+        new iam.PolicyStatement({
+          actions: ["s3:PutObject"],
+          resources: [this.uiStorageBucket.arnForObjects(`jobs/*`)],
+        }),
       ],
+      environment: {
+        S3_BUCKET_NAME: this.uiStorageBucket.bucketName,
+      },
     });
 
     const ds = this.graphqlApi.addLambdaDataSource(

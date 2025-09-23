@@ -60,7 +60,7 @@ export const WorkflowForm = () => {
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
     try {
       window.alert(JSON.stringify({ data }, null, 2));
-      await createWorkflow.mutateAsync({ input: data });
+      await createWorkflow.mutateAsync({ input: { ...data, jobId } });
       toast.success("Workflow created successfully!");
     } catch (error) {
       console.error(error);
