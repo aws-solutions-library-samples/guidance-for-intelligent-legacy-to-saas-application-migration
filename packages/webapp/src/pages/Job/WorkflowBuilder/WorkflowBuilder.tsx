@@ -53,31 +53,29 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
           }
           variant="h3"
           actions={
-            <ButtonDropdown
-              disabled={!!listS3.data?.items}
-              onItemClick={({ detail }) => {
-                switch (detail.id) {
-                  case "createTool":
-                    return setCreateTool(true);
-                  case "newFile":
-                    return setNewFile(true);
-                  case "delFile":
-                    return setDelFile(true);
-                  case "buildWorkflow":
-                    return setBuildWorkflow(true);
-                  default:
-                    toast.error(`Unknown id: ${detail.id}`);
-                }
-              }}
-              items={[
-                { text: "Create Tool", id: "createTool" },
-                { text: "New File", id: "newFile" },
-                { text: "Delete File", id: "delFile" },
-                { text: "Build Workflow", id: "buildWorkflow" },
-              ]}
-            >
-              Actions
-            </ButtonDropdown>
+            !!listS3.data?.items.length && (
+              <ButtonDropdown
+                onItemClick={({ detail }) => {
+                  switch (detail.id) {
+                    case "createTool":
+                      return setCreateTool(true);
+                    case "newFile":
+                      return setNewFile(true);
+                    case "delFile":
+                      return setDelFile(true);
+                    default:
+                      toast.error(`Unknown id: ${detail.id}`);
+                  }
+                }}
+                items={[
+                  { text: "Create Tool", id: "createTool" },
+                  { text: "New File", id: "newFile" },
+                  { text: "Delete File", id: "delFile" },
+                ]}
+              >
+                Editor Actions
+              </ButtonDropdown>
+            )
           }
         >
           Workflow Builder
@@ -115,7 +113,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         {listS3.data?.items.length ? (
           <CodeInput uri={resource.uri} />
         ) : (
-          <WorkflowForm onWorkflowCreated={() => listS3.refetch()} />
+          <WorkflowForm />
         )}
       </SpaceBetween>
 

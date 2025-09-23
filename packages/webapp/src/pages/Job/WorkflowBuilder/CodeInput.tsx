@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import {
-  Box,
   Button,
   CodeEditor,
   SpaceBetween,
   type CodeEditorProps,
 } from "@cloudscape-design/components";
+import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
+import { useParams } from "react-router";
 
 type CodeInput = {
   code: string;
@@ -20,12 +21,15 @@ interface ICodeInput {
 }
 
 export const CodeInput = ({ uri }: ICodeInput) => {
+  const { jobId } = useParams();
+
   const [ace, setAce] = useState<typeof import("ace-builds")>();
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState<CodeEditorProps.Preferences>({
     wrapLines: true,
     theme: "cloud_editor_dark",
   });
+  const startDeployment = useGraphQLMutation("startDeployment");
 
   const code = useGetS3Raw(uri.split("/").slice(3).join("/"));
   const uploadS3Data = useUploadS3Data();
@@ -84,11 +88,22 @@ export const CodeInput = ({ uri }: ICodeInput) => {
                 dark: ["cloud_editor_dark"],
               }}
             />
-            <Box float="right">
+            <SpaceBetween direction="horizontal" size="m">
               <Button disabled={!field.value} loading={uploadS3Data.isPending}>
                 Save Code
               </Button>
-            </Box>
+              <Button
+                formAction="none"
+                variant="primary"
+                disabled={!field.value}
+                loading={uploadS3Data.isPending}
+                onClick={async () =>
+                  await startDeployment.mutateAsync({ jobId })
+                }
+              >
+                Build Workflow
+              </Button>
+            </SpaceBetween>
           </SpaceBetween>
         )}
         control={control}

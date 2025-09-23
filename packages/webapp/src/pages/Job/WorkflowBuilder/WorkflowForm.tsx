@@ -74,6 +74,7 @@ export const WorkflowForm = () => {
         {/* Dynamic Agent Sections */}
         {agents.fields.map((agent, index) => (
           <ExpandableSection
+            defaultExpanded
             key={agent.id}
             headerText={`Agent ${index + 1}`}
             headerActions={
@@ -114,7 +115,7 @@ export const WorkflowForm = () => {
 
         <Header>Assessment Schema</Header>
 
-        <ExpandableSection headerText={`Column Categories`}>
+        <ExpandableSection headerText={`Column Categories`} defaultExpanded>
           <SpaceBetween size="l">
             {columnCategories.fields.map((row, index) => (
               <>
@@ -158,7 +159,7 @@ export const WorkflowForm = () => {
           </SpaceBetween>
         </ExpandableSection>
 
-        <ExpandableSection headerText={`Row Categories`}>
+        <ExpandableSection headerText={`Row Categories`} defaultExpanded>
           <SpaceBetween size="l">
             {rowCategories.fields.map((row, index) => (
               <>

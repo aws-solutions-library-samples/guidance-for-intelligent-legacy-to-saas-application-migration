@@ -19,7 +19,29 @@ export const handler = async (event: IHandler, context: Context) => {
   const templatePath = path.join(__dirname, "workflow_template", "index.py");
   let templateContent = fs.readFileSync(templatePath, "utf8");
 
-  // Generate agent tool functions based on the system prompts
+  const agentToolReferences = agents
+    .map((_, index) => `agent_${index + 1}`)
+    .join(",\n        ");
+
+  templateContent = templateContent.replace(
+    "# Agent list here",
+    `${agentToolReferences}`
+  );
+
+  const agentInvokeReferences = agents
+    .map(
+      (_, index) =>
+        `agent_${index + 1}_response = agent.tool.agent_${
+          index + 1
+        }(s3_uri=os.environ["S3_URI"])`
+    )
+    .join("\n        ");
+
+  templateContent = templateContent.replace(
+    "# Invoke agents here",
+    `${agentInvokeReferences}`
+  );
+
   const agentTools = agents
     .map((agent, index) => {
       const agentName = `agent_${index + 1}`;
@@ -50,21 +72,9 @@ def ${agentName}(query: str) -> str:
     })
     .join("\n");
 
-  // Generate the list of agent tool references for the main agent
-  const agentToolReferences = agents
-    .map((_, index) => `agent_${index + 1}`)
-    .join(",\n        ");
-
-  // Replace the first "Place agents here" comment with the agent tool functions
   templateContent = templateContent.replace(
-    "    # Place agents here",
-    `    ${agentToolReferences}`
-  );
-
-  // Replace the second "Place agents here" comment with the agent tool references
-  templateContent = templateContent.replace(
-    "        # Place agents here",
-    `        ${agentToolReferences}`
+    "# Place tools here",
+    `${agentTools}`
   );
 
   // Write the updated template back

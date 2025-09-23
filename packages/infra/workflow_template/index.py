@@ -20,7 +20,7 @@ model = BedrockModel(
 agent = Agent(
     callback_handler=capture_flow_callback("Orchestrator"),
     tools=[
-        # Place agents here
+        # Agent list here
     ],
     model=model,
 )
@@ -31,7 +31,7 @@ def invoke(payload):
     """Process user input and return a response"""
     crawl_file("index.py")
 
-    # Place agents here
+    # Invoke agents here
 
     user_message = payload.get("prompt", "Hello")
     result = agent(user_message)
@@ -40,3 +40,5 @@ def invoke(payload):
 
 if __name__ == "__main__":
     app.run()
+
+# Place tools here
