@@ -16,7 +16,7 @@ interface IHandler {}
 
 export const handler = async (event: IHandler) => {
   const timestamp = new Date().toISOString();
-  const jobId = uuidv4();
+  const jobId = "job-" + uuidv4().substring(4);
 
   // const list = await s3Client.send(
   //   new ListObjectsCommand({

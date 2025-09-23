@@ -5,6 +5,35 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({});
 
+const uploadDirectoryToS3 = async (localDirPath: string, s3Prefix: string) => {
+  const files = fs.readdirSync(localDirPath, { withFileTypes: true });
+
+  for (const file of files) {
+    const localFilePath = path.join(localDirPath, file.name);
+    const s3Key = path.join(s3Prefix, file.name).replace(/\\/g, "/"); // Normalize path for S3
+
+    if (file.isDirectory()) {
+      // Recursively upload subdirectories
+      await uploadDirectoryToS3(localFilePath, s3Key);
+    } else {
+      // Upload individual files
+      const fileContent = fs.readFileSync(localFilePath);
+
+      const uploadParams = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: s3Key,
+        Body: fileContent,
+      };
+
+      const command = new PutObjectCommand(uploadParams);
+      await s3Client.send(command);
+      console.log(
+        `Successfully uploaded ${localFilePath} to s3://${process.env.S3_BUCKET_NAME}/${s3Key}`
+      );
+    }
+  }
+};
+
 interface IHandler {
   jobId: string;
   agents: { systemPrompt: string }[];
@@ -15,7 +44,11 @@ interface IHandler {
 export const handler = async (event: IHandler, context: Context) => {
   const { jobId, agents } = event;
 
-  // Read the workflow template
+  await uploadDirectoryToS3(
+    path.join(__dirname, "workflow_template"),
+    `jobs/${jobId}/code`
+  );
+
   const templatePath = path.join(__dirname, "workflow_template", "index.py");
   let templateContent = fs.readFileSync(templatePath, "utf8");
 

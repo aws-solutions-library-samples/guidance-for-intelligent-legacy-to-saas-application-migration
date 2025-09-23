@@ -215,12 +215,17 @@ export class CodeBuild extends Construct {
               else
                   echo "No agentcore_id found - Running create-agent-runtime"
                   RUNTIME_NAME=$(echo $JOB_ID | tr '-' '_')
-                  CREATED_RUNTIME=$(aws bedrock-agentcore-control create-agent-runtime \
-                      --agent-runtime-name $RUNTIME_NAME \
-                      --agent-runtime-artifact containerConfiguration={containerUri=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG} \
-                      --role-arn $AGENTCORE_ROLE_ARN \
-                      --network-configuration networkMode=PUBLIC)
-                  echo "Created runtime: $CREATED_RUNTIME"
+
+                  if CREATED_RUNTIME=$(aws bedrock-agentcore-control create-agent-runtime \
+                                        --agent-runtime-name $RUNTIME_NAME \
+                                        --agent-runtime-artifact containerConfiguration={containerUri=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG} \
+                                        --role-arn $AGENTCORE_ROLE_ARN \
+                                        --network-configuration networkMode=PUBLIC); then
+                      echo "Created runtime: $CREATED_RUNTIME"
+                  else
+                      echo "Error: Failed to create agent runtime" >&2
+                      exit 1
+                  fi
                   AGENTCORE_ID=$(echo "$CREATED_RUNTIME" | jq -r '.agentRuntimeId')
               fi`,
 
