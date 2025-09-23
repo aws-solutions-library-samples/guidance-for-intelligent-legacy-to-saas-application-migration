@@ -58,6 +58,21 @@ export type ToolCreationUpdate = {
   eventId: string,
 };
 
+export type CreateWorkflowInput = {
+  agents?: Array< Agents | null > | null,
+  rowCategories?: Array< Category | null > | null,
+  columnCategories?: Array< Category | null > | null,
+};
+
+export type Agents = {
+  systemPrompt?: string | null,
+};
+
+export type Category = {
+  name?: string | null,
+  description?: string | null,
+};
+
 export type JobConnection = {
   __typename: "JobConnection",
   jobs?:  Array<Job > | null,
@@ -205,15 +220,6 @@ export type DeleteJobMutation = {
   } | null,
 };
 
-export type StartAssessmentMutationVariables = {
-  jobId?: string | null,
-  streaming?: boolean | null,
-};
-
-export type StartAssessmentMutation = {
-  startAssessment?: string | null,
-};
-
 export type CreateToolMutationVariables = {
   jobId?: string | null,
   prompt?: string | null,
@@ -237,6 +243,23 @@ export type PublishToolCreationUpdateMutation = {
     message: string,
     eventId: string,
   } | null,
+};
+
+export type CreateWorkflowMutationVariables = {
+  input?: CreateWorkflowInput | null,
+};
+
+export type CreateWorkflowMutation = {
+  createWorkflow?: string | null,
+};
+
+export type StartAssessmentMutationVariables = {
+  jobId?: string | null,
+  streaming?: boolean | null,
+};
+
+export type StartAssessmentMutation = {
+  startAssessment?: string | null,
 };
 
 export type StartDeploymentMutationVariables = {

@@ -28,6 +28,21 @@ input CreateJobInput {
   description: String
 }
 
+input Agents {
+  systemPrompt: String
+}
+
+input Category {
+  name: String
+  description: String
+}
+
+input CreateWorkflowInput {
+  agents: [Agents]
+  rowCategories: [Category]
+  columnCategories: [Category]
+}
+
 input SelectInput {
   label: String
   value: String
@@ -121,8 +136,6 @@ type Mutation {
   updateJob(input: UpdateJobInput!): Job
   deleteJob(jobId: String!): Job
 
-  startAssessment(jobId: String, streaming: Boolean): AWSJSON
-
   createTool(
     jobId: String
     prompt: String
@@ -133,6 +146,8 @@ type Mutation {
     input: ToolCreationUpdateInput!
   ): ToolCreationUpdate @aws_iam
 
+  createWorkflow(input: CreateWorkflowInput): AWSJSON
+  startAssessment(jobId: String, streaming: Boolean): AWSJSON
   startDeployment(jobId: String): AWSJSON
 }
 

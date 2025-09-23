@@ -4,7 +4,11 @@ import { DynamoDB } from "@aws-sdk/client-dynamodb";
 const ddbClient = new DynamoDB({});
 const ddbDocClient = DynamoDBDocument.from(ddbClient);
 
-export const handler = async (event) => {
+interface IHandler {
+  jobId: string;
+}
+
+export const handler = async (event: IHandler) => {
   const { jobId } = event;
 
   await ddbDocClient.delete({

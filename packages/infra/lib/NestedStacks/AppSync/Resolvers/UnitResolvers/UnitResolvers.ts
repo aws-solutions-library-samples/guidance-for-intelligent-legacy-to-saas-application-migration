@@ -134,10 +134,12 @@ export class UnitResolvers extends Construct {
     /************************* Mutations *************************/
     /*************************************************************/
 
-    this.createJob("Mutation", "createJob");
     this.createResolver("Mutation", "updateJob", ddbDs);
+
+    this.createJob("Mutation", "createJob");
     this.deleteJob("Mutation", "deleteJob");
     this.createTool("Mutation", "createTool");
+    this.createWorkflow("Mutation", "createWorkflow");
 
     // Add local data source for subscription publishing
     const localDs = this.graphqlApi.addNoneDataSource("Local DS");
@@ -285,6 +287,50 @@ export class UnitResolvers extends Construct {
 
     NagSuppressions.addResourceSuppressions(
       ds,
+      [
+        {
+          id: "AwsSolutions-IAM5",
+          reason: "Allowing the function to invoke lambda",
+        },
+      ],
+      true
+    );
+  };
+
+  createWorkflow = (typeName: "Mutation" | "Query", fieldName: string) => {
+    const createWorkflow = new nodejs.NodejsFunction(this, "Create Workflow", {
+      entry: __dirname + `/${typeName}/${fieldName}/index.ts`,
+      architecture: lambda.Architecture.ARM_64,
+      runtime: lambda.Runtime.NODEJS_22_X,
+      timeout: cdk.Duration.minutes(5),
+      initialPolicy: [
+        // new iam.PolicyStatement({
+        //   actions: [
+        //     "bedrock:InvokeModel",
+        //     "bedrock:InvokeModelWithResponseStream",
+        //   ],
+        //   resources: ["*"],
+        // }),
+        // new iam.PolicyStatement({
+        //   actions: ["appsync:GraphQL"],
+        //   resources: [`${this.graphqlApi.arn}/*`],
+        // }),
+        // new iam.PolicyStatement({
+        //   actions: ["s3:PutObject", "s3:GetObject"],
+        //   resources: [this.uiStorageBucket.arnForObjects(`jobs/*`)],
+        // }),
+      ],
+    });
+
+    const ds = this.graphqlApi.addLambdaDataSource(
+      "Create Workflow Ds",
+      createWorkflow
+    );
+
+    this.createResolver(typeName, fieldName, ds);
+
+    NagSuppressions.addResourceSuppressions(
+      [ds, createWorkflow],
       [
         {
           id: "AwsSolutions-IAM5",

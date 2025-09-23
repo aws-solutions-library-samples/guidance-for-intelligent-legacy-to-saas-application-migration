@@ -18,20 +18,17 @@ import {
   Input,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
+import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
 
 interface WorkflowFormInput {
-  agents: { system_prompt: string }[];
+  agents: { systemPrompt: string }[];
   rowCategories: { name: string; description: string }[];
   columnCategories: { name: string; description: string }[];
 }
 
-interface IWorkflowForm {
-  onWorkflowCreated: () => void;
-}
-
-export const WorkflowForm = ({ onWorkflowCreated }: IWorkflowForm) => {
+export const WorkflowForm = () => {
   const { jobId } = useParams();
-  const uploadS3Data = useUploadS3Data();
+  const createWorkflow = useGraphQLMutation("createWorkflow");
 
   const {
     handleSubmit,
@@ -62,85 +59,9 @@ export const WorkflowForm = ({ onWorkflowCreated }: IWorkflowForm) => {
 
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
     try {
-      const fileName = data.workflowName.endsWith(".py")
-        ? data.workflowName
-        : `${data.workflowName}.py`;
-
-      // Generate workflow code that includes agent definitions
-      const agentDefinitions = agents
-        .map(
-          (agent) =>
-            `def ${agent.name.toLowerCase().replace(/\s+/g, "_")}():
-    """
-    ${agent.description || `${agent.name} responsibilities`}
-    """
-    # Add ${agent.name} logic here
-    pass`
-        )
-        .join("\n\n");
-
-      const workflowCode = `# Multi-Agent Workflow
-# Generated workflow with ${agents.length} agent(s)
-
-${agentDefinitions}
-
-def main():
-    """
-    Main workflow orchestrator
-    """
-    print("Starting multi-agent workflow...")
-    
-    # Execute agents in sequence
-${agents
-  .map((agent) => `    ${agent.name.toLowerCase().replace(/\s+/g, "_")}()`)
-  .join("\n")}
-    
-    return "Workflow completed successfully"
-
-if __name__ == "__main__":
-    main()
-`;
-
-      await uploadS3Data.mutateAsync({
-        key: `jobs/${jobId}/code/${fileName}`,
-        body: workflowCode,
-        contentType: "text/plain",
-      });
-
-      // Create a README with agent descriptions
-      const agentDescriptions = agents
-        .map(
-          (agent) =>
-            `## ${agent.name}\n${
-              agent.description || "No description provided"
-            }`
-        )
-        .join("\n\n");
-
-      const readmeContent = `# Multi-Agent Workflow
-
-${data.description || "Multi-agent workflow system"}
-
-## Agents
-
-${agentDescriptions}
-
-## Usage
-
-Run the workflow with:
-\`\`\`bash
-python ${fileName}
-\`\`\`
-`;
-
-      await uploadS3Data.mutateAsync({
-        key: `jobs/${jobId}/code/README.md`,
-        body: readmeContent,
-        contentType: "text/plain",
-      });
-
+      window.alert(JSON.stringify({ data }, null, 2));
+      await createWorkflow.mutateAsync({ input: data });
       toast.success("Workflow created successfully!");
-      onWorkflowCreated();
     } catch (error) {
       console.error(error);
       toast.error("Failed to create workflow");
@@ -164,7 +85,7 @@ python ${fileName}
             }
           >
             <Controller
-              name={`agents.${index}.system_prompt`}
+              name={`agents.${index}.systemPrompt`}
               control={control}
               render={({ field }) => (
                 <FormField
@@ -174,7 +95,7 @@ python ${fileName}
                   <Textarea
                     {...field}
                     onChange={({ detail }) => field.onChange(detail.value)}
-                    name={`agents.${index}.system_prompt`}
+                    name={`agents.${index}.systemPrompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
                     rows={4}
                   />
@@ -185,7 +106,7 @@ python ${fileName}
         ))}
         <Button
           formAction="none"
-          onClick={() => agents.append({ system_prompt: "" })}
+          onClick={() => agents.append({ systemPrompt: "" })}
           iconName="add-plus"
         >
           Add Agent
@@ -310,7 +231,7 @@ python ${fileName}
           <Button
             variant="primary"
             formAction="submit"
-            loading={isSubmitting || uploadS3Data.isPending}
+            loading={isSubmitting}
             disabled={!agents.fields.length}
           >
             Create Workflow
