@@ -25,7 +25,11 @@ interface WorkflowFormInput {
   columnCategories: { name: string; description: string }[];
 }
 
-export const WorkflowForm = () => {
+interface IWorkflowForm {
+  refetch: () => void;
+}
+
+export const WorkflowForm = ({ refetch }: IWorkflowForm) => {
   const { jobId } = useParams();
   const createWorkflow = useGraphQLMutation("createWorkflow");
 
@@ -35,9 +39,105 @@ export const WorkflowForm = () => {
     formState: { isSubmitting },
   } = useForm<WorkflowFormInput>({
     defaultValues: {
-      agents: [],
-      rowCategories: [],
-      columnCategories: [],
+      agents: [
+        {
+          systemPrompt: `You are an Infrastructure Architecture Assessment Agent specializing in VMware migration analysis. Your role is to analyze infrastructure and identify migration contingencies.
+
+INPUTS:
+- Knowledge base with VMware best practices and cloud service mappings
+- S3 URI containing infrastructure configuration dumps
+
+YOUR TASKS:
+1. Inventory current VMware infrastructure components
+2. Identify version compatibility issues with target cloud
+3. Assess network and storage dependencies
+4. Calculate resource requirements and sizing
+5. Flag infrastructure-related migration blockers
+
+CLASSIFICATION CRITERIA:
+- GO: Component is cloud-ready, no changes needed
+- GO_WITH_CONDITIONS: Component needs minor updates or configuration changes
+- NO_GO: Component has critical incompatibilities or missing prerequisites
+
+For each infrastructure component, determine:
+- Migration readiness status (GO/GO_WITH_CONDITIONS/NO_GO)
+- Required remediation actions
+- Estimated effort (hours)
+- Risk level (LOW/MEDIUM/HIGH/CRITICAL)
+
+OUTPUT REQUIREMENTS:
+Provide structured findings that classify each infrastructure component into the contingency categories with specific remediation requirements and timelines.`,
+        },
+        {
+          systemPrompt: `You are a Migration Strategy Planning Agent responsible for assessing migration readiness and identifying planning contingencies.
+
+INPUTS:
+- Knowledge base with migration methodologies and best practices
+- S3 URI containing application dependencies and infrastructure maps
+
+YOUR TASKS:
+1. Map application dependencies and migration waves
+2. Assess migration tool compatibility
+3. Identify scheduling constraints and downtime windows
+4. Evaluate rollback capabilities
+5. Document migration prerequisites
+
+CLASSIFICATION CRITERIA:
+- GO: Clear migration path, tools ready, dependencies mapped
+- GO_WITH_CONDITIONS: Missing prerequisites, unclear dependencies, tool limitations
+- NO_GO: Critical dependencies unresolved, no viable migration path
+
+For each workload group, determine:
+- Migration readiness status
+- Missing prerequisites
+- Dependency resolution requirements
+- Estimated migration window (hours)
+- Business impact level
+
+OUTPUT REQUIREMENTS:
+Classify workloads into contingency categories based on migration readiness, dependencies, and tool availability.
+`,
+        },
+      ],
+      rowCategories: [
+        {
+          name: "Infrastructure_Compatibility",
+          description:
+            "Hardware, vSphere versions, cluster configurations, storage, and network infrastructure compatibility with target cloud",
+        },
+        {
+          name: "Migration_Tooling",
+          description:
+            "Availability and compatibility of migration tools (HCX, vMotion, SRM), automation capabilities",
+        },
+        {
+          name: "Operational_Readiness",
+          description:
+            "Team skills, documentation, runbooks, support models, and operational maturity",
+        },
+        {
+          name: "Application_Dependencies",
+          description:
+            "Application interdependencies, database connections, integration points, and service dependencies",
+        },
+      ],
+      columnCategories: [
+        {
+          name: "GO",
+          description:
+            "Component/area is fully ready for migration with no blockers or conditions",
+        },
+        {
+          name: "GO_WITH_CONDITIONS",
+          description:
+            "Migration possible but requires specific remediations or conditions to be met first",
+        },
+        {
+          name: "NO_GO",
+          description:
+            "Critical blockers prevent migration until major issues are resolved",
+        },
+      ],
     },
   });
 
@@ -59,6 +159,7 @@ export const WorkflowForm = () => {
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
     try {
       await createWorkflow.mutateAsync({ input: { ...data, jobId } });
+      refetch();
       toast.success("Workflow created successfully!");
     } catch (error) {
       console.error(error);
@@ -77,6 +178,7 @@ export const WorkflowForm = () => {
             headerText={`Agent ${index + 1}`}
             headerActions={
               <Button
+                disabled={isSubmitting}
                 variant="icon"
                 iconName="close"
                 onClick={() => agents.remove(index)}
@@ -97,6 +199,7 @@ export const WorkflowForm = () => {
                     name={`agents.${index}.systemPrompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
                     rows={4}
+                    disabled={isSubmitting}
                   />
                 </FormField>
               )}
@@ -107,6 +210,7 @@ export const WorkflowForm = () => {
           formAction="none"
           onClick={() => agents.append({ systemPrompt: "" })}
           iconName="add-plus"
+          disabled={isSubmitting}
         >
           Add Agent
         </Button>
@@ -115,7 +219,7 @@ export const WorkflowForm = () => {
 
         <ExpandableSection headerText={`Column Categories`} defaultExpanded>
           <SpaceBetween size="l">
-            {columnCategories.fields.map((row, index) => (
+            {columnCategories.fields.map((_, index) => (
               <>
                 <Controller
                   name={`columnCategories.${index}.name`}
@@ -126,6 +230,7 @@ export const WorkflowForm = () => {
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Name...`}
+                        disabled={isSubmitting}
                       />
                     </FormField>
                   )}
@@ -139,6 +244,7 @@ export const WorkflowForm = () => {
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Description...`}
+                        disabled={isSubmitting}
                       />
                     </FormField>
                   )}
@@ -151,6 +257,7 @@ export const WorkflowForm = () => {
                 columnCategories.append({ name: "", description: "" })
               }
               iconName="add-plus"
+              disabled={isSubmitting}
             >
               Add
             </Button>
@@ -159,7 +266,7 @@ export const WorkflowForm = () => {
 
         <ExpandableSection headerText={`Row Categories`} defaultExpanded>
           <SpaceBetween size="l">
-            {rowCategories.fields.map((row, index) => (
+            {rowCategories.fields.map((_, index) => (
               <>
                 <Controller
                   name={`rowCategories.${index}.name`}
@@ -170,6 +277,7 @@ export const WorkflowForm = () => {
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Name...`}
+                        disabled={isSubmitting}
                       />
                     </FormField>
                   )}
@@ -183,6 +291,7 @@ export const WorkflowForm = () => {
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Description...`}
+                        disabled={isSubmitting}
                       />
                     </FormField>
                   )}
@@ -195,6 +304,7 @@ export const WorkflowForm = () => {
                 rowCategories.append({ name: "", description: "" })
               }
               iconName="add-plus"
+              disabled={isSubmitting}
             >
               Add
             </Button>
@@ -229,7 +339,6 @@ export const WorkflowForm = () => {
         <Box float="right">
           <Button
             variant="primary"
-            formAction="submit"
             loading={isSubmitting}
             disabled={!agents.fields.length}
           >

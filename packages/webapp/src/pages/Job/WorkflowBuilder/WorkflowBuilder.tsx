@@ -113,7 +113,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         {listS3.data?.items.length ? (
           <CodeInput uri={resource.uri} />
         ) : (
-          <WorkflowForm />
+          <WorkflowForm refetch={listS3.refetch} />
         )}
       </SpaceBetween>
 
