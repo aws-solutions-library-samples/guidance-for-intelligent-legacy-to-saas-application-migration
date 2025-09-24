@@ -1,6 +1,8 @@
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
+import { useGraphQLMutation } from "../../hooks/useTanStackQuery";
 import { DialogPanel, Fieldset, Dialog } from "@headlessui/react";
 import type { Dispatch, SetStateAction } from "react";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
 import {
@@ -10,11 +12,6 @@ import {
   Textarea,
   Button,
 } from "@cloudscape-design/components";
-
-import {
-  useGraphQLMutation,
-  useGraphQLQuery,
-} from "../../hooks/useTanStackQuery";
 
 type CreateJobInputs = {
   name: string;
@@ -30,10 +27,10 @@ export const CreateJobDialog = ({
   dialogOpen,
   setDialogOpen,
 }: ICreateJobDialog) => {
-  const { control, handleSubmit, reset } = useForm<CreateJobInputs>();
+  const { control, handleSubmit } = useForm<CreateJobInputs>();
+  const navigate = useNavigate();
 
   const createJobMutation = useGraphQLMutation("createJob");
-  const listJobsQuery = useGraphQLQuery("listJobs");
 
   const onSubmit: SubmitHandler<CreateJobInputs> = async (data) => {
     const { name, description } = data;
@@ -42,10 +39,7 @@ export const CreateJobDialog = ({
       await createJobMutation.mutateAsync({
         input: { name, description },
       });
-
-      setDialogOpen(false);
-      reset();
-      listJobsQuery.refetch();
+      navigate(`/job/${name}`);
       toast.success("Successfully created job!");
     } catch (error) {
       return toast.error(JSON.stringify(error, null, 2));
