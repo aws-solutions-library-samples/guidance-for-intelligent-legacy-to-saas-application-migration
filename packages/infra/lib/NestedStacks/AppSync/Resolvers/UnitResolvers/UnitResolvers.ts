@@ -218,45 +218,6 @@ export class UnitResolvers extends Construct {
     );
   };
 
-  createJob = (typeName: "Mutation" | "Query", fieldName: string) => {
-    const createJobFn = new nodejs.NodejsFunction(this, "Create Job Fn", {
-      entry: __dirname + `/${typeName}/${fieldName}/index.ts`,
-      architecture: lambda.Architecture.ARM_64,
-      runtime: lambda.Runtime.NODEJS_22_X,
-      timeout: cdk.Duration.seconds(30),
-      vpc: this.vpc,
-      initialPolicy: [
-        new iam.PolicyStatement({
-          actions: ["dynamodb:PutItem"],
-          resources: [this.ddbTable.tableArn],
-        }),
-      ],
-      environment: {
-        tableName: this.ddbTable.tableName,
-        bucket: this.uiStorageBucket.bucketName,
-      },
-    });
-    this.uiStorageBucket.grantReadWrite(createJobFn);
-
-    const ds = this.graphqlApi.addLambdaDataSource(
-      "Create Job Ds",
-      createJobFn
-    );
-
-    this.createResolver(typeName, fieldName, ds);
-
-    NagSuppressions.addResourceSuppressions(
-      [ds, createJobFn],
-      [
-        {
-          id: "AwsSolutions-IAM5",
-          reason: "Allowing the function to invoke lambda",
-        },
-      ],
-      true
-    );
-  };
-
   deleteJob = (typeName: "Mutation" | "Query", fieldName: string) => {
     const deleteJobFn = new nodejs.NodejsFunction(this, "Delete Job Fn", {
       entry: __dirname + `/${typeName}/${fieldName}/index.ts`,
