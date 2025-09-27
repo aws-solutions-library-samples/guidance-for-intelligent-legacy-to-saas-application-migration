@@ -8,20 +8,24 @@ import {
   Box,
   SpaceBetween,
   Link,
-  ButtonDropdown,
+  Button,
 } from "@cloudscape-design/components";
 
 import "ace-builds/css/ace.css";
 import "ace-builds/css/theme/cloud_editor.css";
 import "ace-builds/css/theme/cloud_editor_dark.css";
 import { CreateTool } from "./CreateTool";
-import toast from "react-hot-toast";
 import { NewFile } from "./NewFile";
 import { DelFile } from "./DelFile";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { GetJobQuery } from "../../../API";
 import { Deployment } from "./Deployment";
 import { WorkflowForm } from "./WorkflowForm";
+import { Avatar } from "@cloudscape-design/chat-components";
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+} from "../../../hooks/useTanStackQuery";
 
 interface IWorkflowBuilder {
   getJobQuery: UseQueryResult<GetJobQuery, Error>;
@@ -36,6 +40,11 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
       import.meta.env.VITE_UISTORAGEBUCKET
     }/jobs/${jobId}/code/index.py`,
   });
+
+  const codebuildJob = useGraphQLQuery("getCodeBuild", {
+    codebuildArn: getJobQuery.data?.getJob?.codebuildArn,
+  });
+  const startDeployment = useGraphQLMutation("startDeployment");
 
   const [createTool, setCreateTool] = useState(false);
   const [newFile, setNewFile] = useState(false);
@@ -52,32 +61,47 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
           variant="h3"
           actions={
             !!listS3.data?.items.length && (
-              <ButtonDropdown
-                onItemClick={({ detail }) => {
-                  switch (detail.id) {
-                    case "createTool":
-                      return setCreateTool(true);
-                    case "newFile":
-                      return setNewFile(true);
-                    case "delFile":
-                      return setDelFile(true);
-                    default:
-                      toast.error(`Unknown id: ${detail.id}`);
+              <SpaceBetween size="s" direction="horizontal">
+                <Button onClick={() => setNewFile(true)} iconName="add-plus" />
+                <Button onClick={() => setDelFile(true)} iconName="remove" />
+                <Button
+                  formAction="none"
+                  variant="primary"
+                  disabled={
+                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
+                      .builds?.[0].buildStatus == "IN_PROGRESS"
                   }
-                }}
-                items={[
-                  { text: "Create Tool", id: "createTool" },
-                  { text: "New File", id: "newFile" },
-                  { text: "Delete File", id: "delFile" },
-                ]}
-              >
-                Editor Actions
-              </ButtonDropdown>
+                  loading={startDeployment.isPending}
+                  onClick={() => startDeployment.mutate({ jobId })}
+                >
+                  Build Workflow
+                </Button>
+                <Button
+                  variant="link"
+                  iconName="refresh"
+                  loading={codebuildJob.isRefetching}
+                  onClick={() => codebuildJob.refetch()}
+                />
+                <Button
+                  onClick={() => setCreateTool(true)}
+                  variant="inline-link"
+                >
+                  <Avatar
+                    ariaLabel="Create tool with GenAI"
+                    color="gen-ai"
+                    tooltipText="Create a tool with GenAI"
+                  />
+                </Button>
+              </SpaceBetween>
             )
           }
         >
           Workflow Builder
         </Header>
+
+        {codebuildJob.data && (
+          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
+        )}
 
         {!!listS3.data?.items.length && (
           <Box>
@@ -112,16 +136,10 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         )}
       </SpaceBetween>
 
-      {!!listS3.data?.items.length && (
-        <>
-          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
-
-          {/* Modals */}
-          <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
-          <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
-          <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
-        </>
-      )}
+      {/* Modals */}
+      <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
+      <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
+      <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
     </>
   );
 };

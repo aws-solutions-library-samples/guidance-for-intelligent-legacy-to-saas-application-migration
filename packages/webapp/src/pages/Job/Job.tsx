@@ -62,9 +62,11 @@ export const Job = () => {
                   Workflow Builder
                 </Tab>
 
-                <Tab className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:text-gray-600 disabled:hover:bg-transparent rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none">
-                  Assessment
-                </Tab>
+                {getJobQuery.data.getJob.agentcoreId && (
+                  <Tab className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:text-gray-600 disabled:hover:bg-transparent rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none">
+                    Assessment
+                  </Tab>
+                )}
               </>
             )}
           </div>
