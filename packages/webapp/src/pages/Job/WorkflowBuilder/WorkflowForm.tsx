@@ -17,6 +17,7 @@ import {
   Input,
   Alert,
   Cards,
+  StatusIndicator,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
 import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
@@ -143,42 +144,46 @@ Provide structured findings that classify each infrastructure component into the
       <SpaceBetween size="l">
         {/* Dynamic Agent Sections */}
         {agents.fields.map((agent, index) => (
-          <ExpandableSection
-            defaultExpanded
-            key={agent.id}
-            headerText={`Agent ${index + 1}`}
-            headerActions={
-              <Button
-                disabled={createWorkflow.isPending}
-                variant="icon"
-                iconName="close"
-                onClick={() => agents.remove(index)}
-              />
-            }
-          >
-            <Controller
-              name={`agents.${index}.systemPrompt`}
-              rules={{ required: true }}
-              control={control}
-              render={({ field, fieldState }) => (
+          <Controller
+            name={`agents.${index}.systemPrompt`}
+            rules={{ required: true }}
+            control={control}
+            render={({ field, fieldState }) => (
+              <ExpandableSection
+                defaultExpanded
+                key={agent.id}
+                headerText={
+                  <>
+                    Agent {index + 1}{" "}
+                    {fieldState.invalid && <StatusIndicator type="error" />}
+                  </>
+                }
+                headerActions={
+                  <Button
+                    disabled={createWorkflow.isPending}
+                    variant="icon"
+                    iconName="close"
+                    onClick={() => agents.remove(index)}
+                  />
+                }
+              >
                 <FormField
                   label="Agent Responsibilities"
                   description={`Define what agent should do in this workflow`}
-                  errorText={fieldState.error?.type}
                   stretch
                 >
                   <Textarea
                     {...field}
+                    {...fieldState}
                     onChange={({ detail }) => field.onChange(detail.value)}
-                    // name={`agents.${index}.systemPrompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
                     rows={10}
                     disabled={createWorkflow.isPending}
                   />
                 </FormField>
-              )}
-            />
-          </ExpandableSection>
+              </ExpandableSection>
+            )}
+          />
         ))}
         {!agents.fields.length && (
           <Alert type="error">A minimum of one agent is required</Alert>
@@ -223,13 +228,15 @@ Provide structured findings that classify each infrastructure component into the
                         key={item.id}
                         name={`columnCategories.${item.index}.name`}
                         control={control}
-                        render={({ field }) => (
+                        rules={{ required: true }}
+                        render={({ field, fieldState }) => (
                           <Input
                             {...field}
+                            {...fieldState}
                             onChange={({ detail }) =>
                               field.onChange(detail.value)
                             }
-                            placeholder={`Name...`}
+                            placeholder="Name..."
                             disabled={createWorkflow.isPending}
                           />
                         )}
@@ -241,10 +248,12 @@ Provide structured findings that classify each infrastructure component into the
                       <Controller
                         key={item.id}
                         name={`columnCategories.${item.index}.description`}
+                        rules={{ required: true }}
                         control={control}
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                           <Textarea
                             {...field}
+                            {...fieldState}
                             onChange={({ detail }) =>
                               field.onChange(detail.value)
                             }
@@ -304,10 +313,12 @@ Provide structured findings that classify each infrastructure component into the
                       <Controller
                         key={item.id}
                         name={`rowCategories.${item.index}.name`}
+                        rules={{ required: true }}
                         control={control}
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                           <Input
                             {...field}
+                            {...fieldState}
                             onChange={({ detail }) =>
                               field.onChange(detail.value)
                             }
@@ -323,10 +334,12 @@ Provide structured findings that classify each infrastructure component into the
                       <Controller
                         key={item.id}
                         name={`rowCategories.${item.index}.description`}
+                        rules={{ required: true }}
                         control={control}
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                           <Textarea
                             {...field}
+                            {...fieldState}
                             onChange={({ detail }) =>
                               field.onChange(detail.value)
                             }
@@ -392,11 +405,7 @@ Provide structured findings that classify each infrastructure component into the
         )}
 
         <Box float="right">
-          <Button
-            variant="primary"
-            loading={createWorkflow.isPending}
-            disabled={!agents.fields.length}
-          >
+          <Button variant="primary" loading={createWorkflow.isPending}>
             Create Workflow
           </Button>
         </Box>
