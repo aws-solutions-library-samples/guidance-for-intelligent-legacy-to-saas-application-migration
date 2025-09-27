@@ -16,6 +16,7 @@ import {
   Table,
   Input,
   Alert,
+  Cards,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
 import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
@@ -192,40 +193,76 @@ Provide structured findings that classify each infrastructure component into the
           Output table schema
         </Header>
 
-        <ExpandableSection headerText={`Column Categories`}>
-          <SpaceBetween size="l">
-            {columnCategories.fields.map((_, index) => (
-              <>
-                <Controller
-                  name={`columnCategories.${index}.name`}
-                  control={control}
-                  render={({ field }) => (
-                    <FormField label={`Column ${index + 1}`}>
-                      <Input
-                        {...field}
-                        onChange={({ detail }) => field.onChange(detail.value)}
-                        placeholder={`Name...`}
+        <ExpandableSection headerText={`Columns`}>
+          <SpaceBetween size="s">
+            <Cards
+              cardDefinition={{
+                header: (item) => (
+                  <Header
+                    actions={
+                      <Button
+                        formAction="none"
                         disabled={createWorkflow.isPending}
+                        variant="icon"
+                        iconName="close"
+                        onClick={() => columnCategories.remove(item.index)}
                       />
-                    </FormField>
-                  )}
-                />
-                <Controller
-                  name={`columnCategories.${index}.description`}
-                  control={control}
-                  render={({ field }) => (
-                    <FormField>
-                      <Textarea
-                        {...field}
-                        onChange={({ detail }) => field.onChange(detail.value)}
-                        placeholder={`Description...`}
-                        disabled={createWorkflow.isPending}
+                    }
+                  >
+                    Column {item.index + 1}
+                  </Header>
+                ),
+                sections: [
+                  {
+                    content: (item) => (
+                      <Controller
+                        name={`columnCategories.${item.index}.name`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            onChange={({ detail }) =>
+                              field.onChange(detail.value)
+                            }
+                            placeholder={`Name...`}
+                            disabled={createWorkflow.isPending}
+                          />
+                        )}
                       />
-                    </FormField>
-                  )}
-                />
-              </>
-            ))}
+                    ),
+                  },
+                  {
+                    content: (item) => (
+                      <Controller
+                        name={`columnCategories.${item.index}.description`}
+                        control={control}
+                        render={({ field }) => (
+                          <Textarea
+                            {...field}
+                            onChange={({ detail }) =>
+                              field.onChange(detail.value)
+                            }
+                            placeholder={`Description...`}
+                            rows={4}
+                            disabled={createWorkflow.isPending}
+                          />
+                        )}
+                      />
+                    ),
+                  },
+                ],
+              }}
+              items={columnCategories.fields.map((item, index) => {
+                return {
+                  index: index,
+                  name: item.name,
+                  description: item.description,
+                };
+              })}
+            />
+            {!columnCategories.fields.length && (
+              <Alert type="error">A minimum of one column is required</Alert>
+            )}
             <Button
               formAction="none"
               onClick={() =>
@@ -234,45 +271,81 @@ Provide structured findings that classify each infrastructure component into the
               iconName="add-plus"
               disabled={createWorkflow.isPending}
             >
-              Add
+              Add Column
             </Button>
           </SpaceBetween>
         </ExpandableSection>
 
-        <ExpandableSection headerText={`Row Categories`}>
-          <SpaceBetween size="l">
-            {rowCategories.fields.map((_, index) => (
-              <>
-                <Controller
-                  name={`rowCategories.${index}.name`}
-                  control={control}
-                  render={({ field }) => (
-                    <FormField label={`Row ${index + 1}`}>
-                      <Input
-                        {...field}
-                        onChange={({ detail }) => field.onChange(detail.value)}
-                        placeholder={`Name...`}
+        <ExpandableSection headerText={`Rows`}>
+          <SpaceBetween size="s">
+            <Cards
+              cardDefinition={{
+                header: (item) => (
+                  <Header
+                    actions={
+                      <Button
+                        formAction="none"
                         disabled={createWorkflow.isPending}
+                        variant="icon"
+                        iconName="close"
+                        onClick={() => rowCategories.remove(item.index)}
                       />
-                    </FormField>
-                  )}
-                />
-                <Controller
-                  name={`rowCategories.${index}.description`}
-                  control={control}
-                  render={({ field }) => (
-                    <FormField>
-                      <Textarea
-                        {...field}
-                        onChange={({ detail }) => field.onChange(detail.value)}
-                        placeholder={`Description...`}
-                        disabled={createWorkflow.isPending}
+                    }
+                  >
+                    Row {item.index + 1}
+                  </Header>
+                ),
+                sections: [
+                  {
+                    content: (item) => (
+                      <Controller
+                        name={`rowCategories.${item.index}.name`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            onChange={({ detail }) =>
+                              field.onChange(detail.value)
+                            }
+                            placeholder={`Name...`}
+                            disabled={createWorkflow.isPending}
+                          />
+                        )}
                       />
-                    </FormField>
-                  )}
-                />
-              </>
-            ))}
+                    ),
+                  },
+                  {
+                    content: (item) => (
+                      <Controller
+                        name={`rowCategories.${item.index}.description`}
+                        control={control}
+                        render={({ field }) => (
+                          <Textarea
+                            {...field}
+                            onChange={({ detail }) =>
+                              field.onChange(detail.value)
+                            }
+                            placeholder={`Description...`}
+                            rows={4}
+                            disabled={createWorkflow.isPending}
+                          />
+                        )}
+                      />
+                    ),
+                  },
+                ],
+              }}
+              items={rowCategories.fields.map((item, index) => {
+                return {
+                  index: index,
+                  name: item.name,
+                  description: item.description,
+                };
+              })}
+            />
+            {!rowCategories.fields.length && (
+              <Alert type="error">A minimum of one row is required</Alert>
+            )}
             <Button
               formAction="none"
               onClick={() =>
@@ -281,7 +354,7 @@ Provide structured findings that classify each infrastructure component into the
               iconName="add-plus"
               disabled={createWorkflow.isPending}
             >
-              Add
+              Add Row
             </Button>
           </SpaceBetween>
         </ExpandableSection>
