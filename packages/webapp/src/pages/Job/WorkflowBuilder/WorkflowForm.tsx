@@ -115,7 +115,7 @@ Provide structured findings that classify each infrastructure component into the
     control,
     name: "agents",
     rules: { minLength: 1 },
-  });
+});
 
   const rowCategories = useFieldArray({
     control,
