@@ -112,16 +112,19 @@ Provide structured findings that classify each infrastructure component into the
   const agents = useFieldArray({
     control,
     name: "agents",
+    rules: { minLength: 1 },
   });
 
   const rowCategories = useFieldArray({
     control,
     name: "rowCategories",
+    rules: { minLength: 1 },
   });
 
   const columnCategories = useFieldArray({
     control,
     name: "columnCategories",
+    rules: { minLength: 1 },
   });
 
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
@@ -167,7 +170,7 @@ Provide structured findings that classify each infrastructure component into the
                   <Textarea
                     {...field}
                     onChange={({ detail }) => field.onChange(detail.value)}
-                    name={`agents.${index}.systemPrompt`}
+                    // name={`agents.${index}.systemPrompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
                     rows={10}
                     disabled={createWorkflow.isPending}
@@ -199,6 +202,7 @@ Provide structured findings that classify each infrastructure component into the
               cardDefinition={{
                 header: (item) => (
                   <Header
+                    key={item.id}
                     actions={
                       <Button
                         formAction="none"
@@ -216,6 +220,7 @@ Provide structured findings that classify each infrastructure component into the
                   {
                     content: (item) => (
                       <Controller
+                        key={item.id}
                         name={`columnCategories.${item.index}.name`}
                         control={control}
                         render={({ field }) => (
@@ -234,6 +239,7 @@ Provide structured findings that classify each infrastructure component into the
                   {
                     content: (item) => (
                       <Controller
+                        key={item.id}
                         name={`columnCategories.${item.index}.description`}
                         control={control}
                         render={({ field }) => (
@@ -254,9 +260,8 @@ Provide structured findings that classify each infrastructure component into the
               }}
               items={columnCategories.fields.map((item, index) => {
                 return {
-                  index: index,
-                  name: item.name,
-                  description: item.description,
+                  ...item,
+                  index,
                 };
               })}
             />
