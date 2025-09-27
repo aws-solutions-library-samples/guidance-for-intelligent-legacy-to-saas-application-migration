@@ -71,6 +71,7 @@ export class StepFunction extends Construct {
       payloadResponseOnly: true,
       payload: sfn.TaskInput.fromObject({
         agentcoreId: "{% $agentcoreId %}",
+        s3Uri: "{% $states.input.Item.s3Uri.S %}",
       }),
     });
 

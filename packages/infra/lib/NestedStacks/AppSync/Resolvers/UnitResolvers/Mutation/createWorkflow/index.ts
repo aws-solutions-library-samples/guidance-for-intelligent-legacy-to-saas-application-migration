@@ -66,7 +66,7 @@ export const handler = async (event: IHandler, context: Context) => {
       (_, index) =>
         `agent_${index + 1}_response = agent.tool.agent_${
           index + 1
-        }(s3_uri=os.environ["S3_URI"])`
+        }(query=f'S3 URI is: {payload["s3Uri"]}')`
     )
     .join("\n    ");
 
@@ -90,18 +90,16 @@ def ${agentName}(query: str) -> str:
     Returns:
         A processed response from the specialized agent
     """
-    try:
-        specialized_agent = Agent(
-            system_prompt="""${agent.systemPrompt}""",
-            tools=[],  # Add specific tools as needed
-            model=model,
-            callback_handler=capture_flow_callback("${agentName}")
-        )
-        
-        response = specialized_agent(query)
-        return str(response)
-    except Exception as e:
-        return f"Error in ${agentName}: {str(e)}"`;
+
+    specialized_agent = Agent(
+        system_prompt="""${agent.systemPrompt}""",
+        tools=[s3_ls, s3_download],  # Add specific tools as needed
+        model=model,
+        callback_handler=capture_flow_callback("${agentName}")
+    )
+    
+    response = specialized_agent(query)
+    return str(response)`;
     })
     .join("\n");
 

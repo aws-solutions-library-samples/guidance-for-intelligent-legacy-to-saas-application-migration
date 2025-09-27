@@ -8,6 +8,7 @@ const client = new BedrockAgentCoreClient({});
 
 type InvokeEvent = {
   agentcoreId: string;
+  payload: any;
 };
 
 export const handler = async (event: InvokeEvent, context: Context) => {
@@ -18,9 +19,7 @@ export const handler = async (event: InvokeEvent, context: Context) => {
       }:${context.invokedFunctionArn.split(":")[4]}:runtime/${
         event.agentcoreId
       }`,
-      payload: Buffer.from(
-        JSON.stringify({ prompt: "How do you make spghetto?" })
-      ),
+      payload: Buffer.from(JSON.stringify(event)),
     })
   );
 

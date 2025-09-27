@@ -137,7 +137,7 @@ export class CodeBuild extends Construct {
           },
           build: {
             commands: [
-              "docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .",
+              `docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg AWS_DEFAULT_REGION=${region} .`,
               "docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG",
             ],
           },
