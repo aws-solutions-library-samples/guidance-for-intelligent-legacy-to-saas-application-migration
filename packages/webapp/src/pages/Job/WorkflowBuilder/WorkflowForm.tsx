@@ -37,7 +37,7 @@ export const WorkflowForm = ({ refetch }: IWorkflowForm) => {
   const { jobId } = useParams();
   const createWorkflow = useGraphQLMutation("createWorkflow");
 
-  const { handleSubmit, control } = useForm<WorkflowFormInput>({
+  const { handleSubmit, control, watch } = useForm<WorkflowFormInput>({
     defaultValues: {
       agents: [
         {
@@ -115,7 +115,7 @@ Provide structured findings that classify each infrastructure component into the
     control,
     name: "agents",
     rules: { minLength: 1 },
-});
+  });
 
   const rowCategories = useFieldArray({
     control,
@@ -128,6 +128,10 @@ Provide structured findings that classify each infrastructure component into the
     name: "columnCategories",
     rules: { minLength: 1 },
   });
+
+  // Watch the current form values for the preview table
+  const watchedRowCategories = watch("rowCategories");
+  const watchedColumnCategories = watch("columnCategories");
 
   const onSubmit: SubmitHandler<WorkflowFormInput> = async (data) => {
     try {
@@ -374,7 +378,7 @@ Provide structured findings that classify each infrastructure component into the
           </SpaceBetween>
         </ExpandableSection>
 
-        {rowCategories.fields.length && columnCategories.fields.length && (
+        {watchedRowCategories?.length && watchedColumnCategories?.length && (
           <Container className="mt-5 bg-[#FAF9F6]!">
             <Table
               header={
@@ -382,10 +386,10 @@ Provide structured findings that classify each infrastructure component into the
                   <span className="text-black">Preview</span>
                 </Header>
               }
-              items={rowCategories.fields.map((field) => {
+              items={watchedRowCategories.map((row, index) => {
                 return {
-                  key: field.id,
-                  name: field.name,
+                  key: rowCategories.fields[index]?.id,
+                  name: row?.name,
                 };
               })}
               resizableColumns
@@ -399,10 +403,10 @@ Provide structured findings that classify each infrastructure component into the
                     </Box>
                   ),
                 },
-                ...columnCategories.fields.map((field) => {
+                ...watchedColumnCategories.map((column, index) => {
                   return {
-                    key: field.id,
-                    header: <span className="text-black">{field.name}</span>,
+                    key: columnCategories.fields[index]?.id,
+                    header: <span className="text-black">{column?.name}</span>,
                     cell: () => null,
                   };
                 }),
