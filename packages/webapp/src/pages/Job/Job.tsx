@@ -81,7 +81,9 @@ export const Job = () => {
           {tabOptions.map(({ name, panel }) => (
             <TabPanel key={name} className="rounded-xl bg-white/5 p-6">
               {getJobQuery.isLoading ? (
-                <Spinner size="big" />
+                <div className="text-white">
+                  <Spinner size="big" />
+                </div>
               ) : getJobQuery.isError ? (
                 <pre>{JSON.stringify(getJobQuery.error, null, 2)}</pre>
               ) : (

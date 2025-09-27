@@ -1,6 +1,21 @@
-type Select {
-  label: String!
-  value: String!
+input CreateJobInput {
+  jobId: ID
+  name: String
+  description: String
+}
+
+input UpdateJobInput {
+  jobId: ID
+  name: String
+  description: String
+  s3Uri: String
+  kb: SelectInput
+  model: SelectInput
+}
+
+type JobConnection {
+  jobs: [Job!]
+  nextToken: String
 }
 
 type Job {
@@ -17,15 +32,9 @@ type Job {
   agentcoreId: String
 }
 
-type JobConnection {
-  jobs: [Job!]
-  nextToken: String
-}
-
-input CreateJobInput {
-  jobId: ID
-  name: String
-  description: String
+type Select {
+  label: String!
+  value: String!
 }
 
 input Agents {
@@ -47,15 +56,6 @@ input CreateWorkflowInput {
 input SelectInput {
   label: String
   value: String
-}
-
-input UpdateJobInput {
-  jobId: ID
-  name: String
-  description: String
-  s3Uri: String
-  kb: SelectInput
-  model: SelectInput
 }
 
 type JobMetrics {
@@ -119,21 +119,15 @@ type ToolCreationUpdate @aws_iam {
   eventId: String!
 }
 
-# type CodeBuildJob {
-#
-# }
-
 type Query {
-  getJob(jobId: ID): Job
-  getCodeBuild(codebuildArn: String): AWSJSON
-  listJobs(limit: Int, nextToken: String): JobConnection
-
-  describeExecution(executionArn: String!): AWSJSON
-
-  listKnowledgeBases: KnowledgeBaseConnection
-  listInferenceProfiles: InferenceProfileConnection
-
   getDashboardMetrics: DashboardMetrics
+  listKnowledgeBases: KnowledgeBaseConnection
+  listJobs(limit: Int, nextToken: String): JobConnection
+  getJob(jobId: ID): Job
+
+  getCodeBuild(codebuildArn: String): AWSJSON
+  describeExecution(executionArn: String!): AWSJSON
+  listInferenceProfiles: InferenceProfileConnection
 }
 
 type Mutation {
