@@ -134,9 +134,9 @@ export class UnitResolvers extends Construct {
     /************************* Mutations *************************/
     /*************************************************************/
 
+    this.createResolver("Mutation", "createJob", ddbDs);
     this.createResolver("Mutation", "updateJob", ddbDs);
 
-    this.createJob("Mutation", "createJob");
     this.deleteJob("Mutation", "deleteJob");
     this.createTool("Mutation", "createTool");
     this.createWorkflow("Mutation", "createWorkflow");

@@ -27,8 +27,9 @@ export const CreateJobDialog = ({
   dialogOpen,
   setDialogOpen,
 }: ICreateJobDialog) => {
-  const { control, handleSubmit } = useForm<CreateJobInputs>();
   const navigate = useNavigate();
+
+  const { control, handleSubmit } = useForm<CreateJobInputs>();
 
   const createJobMutation = useGraphQLMutation("createJob");
 
@@ -36,10 +37,10 @@ export const CreateJobDialog = ({
     const { name, description } = data;
 
     try {
-      await createJobMutation.mutateAsync({
+      const { createJob } = await createJobMutation.mutateAsync({
         input: { name, description },
       });
-      navigate(`/job/${name}`);
+      navigate(`/job/${createJob?.jobId}`);
       toast.success("Successfully created job!");
     } catch (error) {
       return toast.error(JSON.stringify(error, null, 2));
