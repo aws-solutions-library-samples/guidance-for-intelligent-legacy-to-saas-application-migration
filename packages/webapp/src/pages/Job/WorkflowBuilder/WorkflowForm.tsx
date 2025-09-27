@@ -259,10 +259,7 @@ Provide structured findings that classify each infrastructure component into the
                 ],
               }}
               items={columnCategories.fields.map((item, index) => {
-                return {
-                  ...item,
-                  index,
-                };
+                return { ...item, index };
               })}
             />
             {!columnCategories.fields.length && (
@@ -287,6 +284,7 @@ Provide structured findings that classify each infrastructure component into the
               cardDefinition={{
                 header: (item) => (
                   <Header
+                    key={item.id}
                     actions={
                       <Button
                         formAction="none"
@@ -304,6 +302,7 @@ Provide structured findings that classify each infrastructure component into the
                   {
                     content: (item) => (
                       <Controller
+                        key={item.id}
                         name={`rowCategories.${item.index}.name`}
                         control={control}
                         render={({ field }) => (
@@ -322,6 +321,7 @@ Provide structured findings that classify each infrastructure component into the
                   {
                     content: (item) => (
                       <Controller
+                        key={item.id}
                         name={`rowCategories.${item.index}.description`}
                         control={control}
                         render={({ field }) => (
@@ -341,11 +341,7 @@ Provide structured findings that classify each infrastructure component into the
                 ],
               }}
               items={rowCategories.fields.map((item, index) => {
-                return {
-                  index: index,
-                  name: item.name,
-                  description: item.description,
-                };
+                return { ...item, index };
               })}
             />
             {!rowCategories.fields.length && (
