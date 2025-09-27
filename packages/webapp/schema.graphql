@@ -119,6 +119,10 @@ type ToolCreationUpdate @aws_iam {
   eventId: String!
 }
 
+# type CodeBuildJob {
+#
+# }
+
 type Query {
   getJob(jobId: ID): Job
   getCodeBuild(codebuildArn: String): AWSJSON

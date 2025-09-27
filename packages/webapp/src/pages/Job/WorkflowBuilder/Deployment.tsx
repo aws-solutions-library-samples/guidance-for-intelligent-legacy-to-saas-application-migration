@@ -5,15 +5,24 @@ import {
   Header,
   KeyValuePairs,
   Link,
+  SpaceBetween,
   Spinner,
 } from "@cloudscape-design/components";
-import { useGraphQLQuery } from "../../../hooks/useTanStackQuery";
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+} from "../../../hooks/useTanStackQuery";
+import { useParams } from "react-router";
 
 interface IDeployment {
-  codebuildArn: string;
+  codebuildArn?: string | null;
 }
 
 export const Deployment = ({ codebuildArn }: IDeployment) => {
+  const { jobId } = useParams();
+
+  const startDeployment = useGraphQLMutation("startDeployment");
+
   const codebuildJob = useGraphQLQuery("getCodeBuild", {
     codebuildArn,
   });
@@ -27,12 +36,26 @@ export const Deployment = ({ codebuildArn }: IDeployment) => {
           variant="h3"
           className="mb-3"
           actions={
-            <Button
-              variant="link"
-              iconName="refresh"
-              loading={codebuildJob.isRefetching}
-              onClick={() => codebuildJob.refetch()}
-            />
+            <SpaceBetween size="m" direction="horizontal">
+              <Button
+                formAction="none"
+                variant="primary"
+                disabled={
+                  JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
+                    .builds?.[0].buildStatus == "IN_PROGRESS"
+                }
+                loading={startDeployment.isPending}
+                onClick={() => startDeployment.mutate({ jobId })}
+              >
+                Build Workflow
+              </Button>
+              <Button
+                variant="link"
+                iconName="refresh"
+                loading={codebuildJob.isRefetching}
+                onClick={() => codebuildJob.refetch()}
+              />
+            </SpaceBetween>
           }
         >
           Deployment

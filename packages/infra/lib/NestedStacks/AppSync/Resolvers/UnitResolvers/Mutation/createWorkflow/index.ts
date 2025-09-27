@@ -68,7 +68,7 @@ export const handler = async (event: IHandler, context: Context) => {
           index + 1
         }(s3_uri=os.environ["S3_URI"])`
     )
-    .join("\n        ");
+    .join("\n    ");
 
   templateContent = templateContent.replace(
     "# Invoke agents here",

@@ -1,6 +1,7 @@
 # Use uv's ARM64 Python base image
 FROM --platform=linux/arm64 public.ecr.aws/docker/library/python:3.13-slim-bookworm
 
+ENV AWS_DEFAULT_REGION=us-east-1
 
 # Copy entire project (respecting .dockerignore)
 COPY . .

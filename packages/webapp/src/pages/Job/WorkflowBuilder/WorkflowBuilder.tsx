@@ -18,7 +18,6 @@ import { CreateTool } from "./CreateTool";
 import toast from "react-hot-toast";
 import { NewFile } from "./NewFile";
 import { DelFile } from "./DelFile";
-import { BuildWorkflow } from "./BuildWorkflow";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { GetJobQuery } from "../../../API";
 import { Deployment } from "./Deployment";
@@ -41,7 +40,6 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
   const [createTool, setCreateTool] = useState(false);
   const [newFile, setNewFile] = useState(false);
   const [delFile, setDelFile] = useState(false);
-  const [buildWorkflow, setBuildWorkflow] = useState(false);
 
   return (
     <>
@@ -117,20 +115,14 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         )}
       </SpaceBetween>
 
-      {!!listS3.data?.items.length &&
-        getJobQuery.data?.getJob?.codebuildArn && (
-          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
-        )}
+      {!!listS3.data?.items.length && (
+        <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
+      )}
 
       {/* Modals */}
       <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
       <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
       <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
-      <BuildWorkflow
-        buildWorkflow={buildWorkflow}
-        setBuildWorkflow={setBuildWorkflow}
-        getJobQuery={getJobQuery}
-      />
     </>
   );
 };

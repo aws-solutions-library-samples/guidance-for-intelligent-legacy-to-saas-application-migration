@@ -46,6 +46,12 @@ export class CodeBuild extends Construct {
 
     const agentcoreExecutionRole = new iam.Role(this, "Agentcore Role", {
       assumedBy: new iam.ServicePrincipal("bedrock-agentcore.amazonaws.com"),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName("CloudWatchFullAccessV2"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          "BedrockAgentCoreFullAccess"
+        ),
+      ],
       inlinePolicies: {
         Permissions: new iam.PolicyDocument({
           statements: [
@@ -54,69 +60,13 @@ export class CodeBuild extends Construct {
               resources: [`arn:aws:ecr:${region}:${account}:repository/*`],
             }),
             new iam.PolicyStatement({
-              actions: ["logs:DescribeLogStreams", "logs:CreateLogGroup"],
-              resources: [
-                `arn:aws:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/*`,
-              ],
-            }),
-            new iam.PolicyStatement({
-              actions: ["logs:DescribeLogGroups"],
-              resources: [`arn:aws:logs:${region}:${account}:log-group:*`],
-            }),
-            new iam.PolicyStatement({
-              actions: ["logs:CreateLogStream", "logs:PutLogEvents"],
-              resources: [
-                `arn:aws:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*`,
-              ],
-            }),
-            new iam.PolicyStatement({
               actions: ["ecr:GetAuthorizationToken"],
               resources: ["*"],
-            }),
-            new iam.PolicyStatement({
-              actions: [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-                "xray:GetSamplingRules",
-                "xray:GetSamplingTargets",
-              ],
-              resources: ["*"],
-            }),
-            new iam.PolicyStatement({
-              actions: ["cloudwatch:PutMetricData"],
-              resources: ["*"],
-              conditions: {
-                StringEquals: {
-                  "cloudwatch:namespace": "bedrock-agentcore",
-                },
-              },
             }),
             new iam.PolicyStatement({
               actions: ["bedrock-agentcore:InvokeAgentRuntime"],
               resources: [
                 `arn:aws:bedrock-agentcore:${region}:${account}:runtime/*`,
-              ],
-            }),
-            new iam.PolicyStatement({
-              actions: ["bedrock-agentcore:CreateMemory"],
-              resources: ["*"],
-            }),
-            new iam.PolicyStatement({
-              actions: [
-                "bedrock-agentcore:CreateEvent",
-                "bedrock-agentcore:GetEvent",
-                "bedrock-agentcore:GetMemory",
-                "bedrock-agentcore:GetMemoryRecord",
-                "bedrock-agentcore:ListActors",
-                "bedrock-agentcore:ListEvents",
-                "bedrock-agentcore:ListMemoryRecords",
-                "bedrock-agentcore:ListSessions",
-                "bedrock-agentcore:DeleteEvent",
-                "bedrock-agentcore:DeleteMemoryRecord",
-                "bedrock-agentcore:RetrieveMemoryRecords",
-              ],
-              resources: [
-                `arn:aws:bedrock-agentcore:${region}:${account}:memory/*`,
               ],
             }),
             new iam.PolicyStatement({

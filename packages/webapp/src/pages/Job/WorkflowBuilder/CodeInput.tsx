@@ -10,7 +10,6 @@ import {
   type CodeEditorProps,
 } from "@cloudscape-design/components";
 import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
-import { useParams } from "react-router";
 
 type CodeInput = {
   code: string;
@@ -21,8 +20,6 @@ interface ICodeInput {
 }
 
 export const CodeInput = ({ uri }: ICodeInput) => {
-  const { jobId } = useParams();
-
   const [ace, setAce] = useState<typeof import("ace-builds")>();
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState<CodeEditorProps.Preferences>({
@@ -89,19 +86,11 @@ export const CodeInput = ({ uri }: ICodeInput) => {
               }}
             />
             <SpaceBetween direction="horizontal" size="m">
-              <Button disabled={!field.value} loading={uploadS3Data.isPending}>
-                Save Code
-              </Button>
               <Button
-                formAction="none"
-                variant="primary"
-                disabled={!field.value}
+                disabled={!field.value || startDeployment.isPending}
                 loading={uploadS3Data.isPending}
-                onClick={async () =>
-                  await startDeployment.mutateAsync({ jobId })
-                }
               >
-                Build Workflow
+                Save Code
               </Button>
             </SpaceBetween>
           </SpaceBetween>
