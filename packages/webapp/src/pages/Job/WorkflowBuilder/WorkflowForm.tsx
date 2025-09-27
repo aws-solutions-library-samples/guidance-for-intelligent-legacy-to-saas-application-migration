@@ -18,6 +18,7 @@ import {
   Alert,
   Cards,
   StatusIndicator,
+  Container,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
 import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
@@ -374,28 +375,40 @@ Provide structured findings that classify each infrastructure component into the
         </ExpandableSection>
 
         {rowCategories.fields.length && columnCategories.fields.length && (
-          <Table
-            header={<Header>Preview</Header>}
-            items={rowCategories.fields.map((field) => {
-              return {
-                key: field.id,
-                name: field.name,
-              };
-            })}
-            columnDefinitions={[
-              {
-                header: "",
-                cell: ({ name }) => name,
-              },
-              ...columnCategories.fields.map((field) => {
+          <Container className="mt-5 bg-[#FAF9F6]!">
+            <Table
+              header={
+                <Header variant="h3">
+                  <span className="text-black">Preview</span>
+                </Header>
+              }
+              items={rowCategories.fields.map((field) => {
                 return {
                   key: field.id,
-                  header: field.name,
-                  cell: () => null,
+                  name: field.name,
                 };
-              }),
-            ]}
-          />
+              })}
+              resizableColumns
+              variant="embedded"
+              columnDefinitions={[
+                {
+                  header: null,
+                  cell: ({ name }) => (
+                    <Box fontWeight="bold" className="text-black!">
+                      {name}
+                    </Box>
+                  ),
+                },
+                ...columnCategories.fields.map((field) => {
+                  return {
+                    key: field.id,
+                    header: <span className="text-black">{field.name}</span>,
+                    cell: () => null,
+                  };
+                }),
+              ]}
+            />
+          </Container>
         )}
 
         {createWorkflow.isError && (
