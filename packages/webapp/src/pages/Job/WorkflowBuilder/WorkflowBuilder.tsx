@@ -47,7 +47,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         <Header
           description={
             !listS3.data?.items.length &&
-            "Start by first outlining the responsibilities of each agent, followed by the schema of the ouput table"
+            "Outline each agent's key tasks, then provide the structure of the output table"
           }
           variant="h3"
           actions={
@@ -78,35 +78,32 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
         >
           Workflow Builder
         </Header>
-        <Box>
-          {!listS3.isLoading &&
-            listS3.data &&
-            listS3.data.items &&
-            listS3.data.items.length > 0 && (
-              <ul>
-                {listS3.data.items.map((item, index) => (
-                  <li key={index}>
-                    {item.path ===
-                    resource.uri.split("/").slice(3).join("/") ? (
-                      <b>{item.path.split("/").slice(3).join("/")}</b>
-                    ) : (
-                      <Link
-                        onClick={() => {
-                          setResource({
-                            uri: `s3://${
-                              import.meta.env.VITE_UISTORAGEBUCKET
-                            }/${item.path}`,
-                          });
-                        }}
-                      >
-                        {item.path.split("/").slice(3).join("/")}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-        </Box>
+
+        {!!listS3.data?.items.length && (
+          <Box>
+            <ul>
+              {listS3.data.items.map((item) => (
+                <li key={item.eTag}>
+                  {item.path === resource.uri.split("/").slice(3).join("/") ? (
+                    <b>{item.path.split("/").slice(3).join("/")}</b>
+                  ) : (
+                    <Link
+                      onClick={() => {
+                        setResource({
+                          uri: `s3://${import.meta.env.VITE_UISTORAGEBUCKET}/${
+                            item.path
+                          }`,
+                        });
+                      }}
+                    >
+                      {item.path.split("/").slice(3).join("/")}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </Box>
+        )}
 
         {listS3.data?.items.length ? (
           <CodeInput uri={resource.uri} />
@@ -116,13 +113,15 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
       </SpaceBetween>
 
       {!!listS3.data?.items.length && (
-        <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
-      )}
+        <>
+          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
 
-      {/* Modals */}
-      <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
-      <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
-      <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
+          {/* Modals */}
+          <CreateTool createTool={createTool} setCreateTool={setCreateTool} />
+          <NewFile newFile={newFile} setNewFile={setNewFile} listS3={listS3} />
+          <DelFile delFile={delFile} setDelFile={setDelFile} listS3={listS3} />
+        </>
+      )}
     </>
   );
 };

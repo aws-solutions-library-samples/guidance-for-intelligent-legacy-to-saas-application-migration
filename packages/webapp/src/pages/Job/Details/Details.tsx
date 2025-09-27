@@ -32,6 +32,7 @@ export const Details = ({ getJobQuery }: IDetails) => {
               loading={getJobQuery.isRefetching}
               onClick={() => getJobQuery.refetch()}
               iconName="refresh"
+              variant="inline-icon"
             />
           }
         >

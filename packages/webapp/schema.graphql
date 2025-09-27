@@ -134,6 +134,7 @@ type Mutation {
   createJob(input: CreateJobInput!): Job
   updateJob(input: UpdateJobInput!): Job
   deleteJob(jobId: String!): Job
+  createWorkflow(input: CreateWorkflowInput): AWSJSON
 
   createTool(
     jobId: String
@@ -145,7 +146,6 @@ type Mutation {
     input: ToolCreationUpdateInput!
   ): ToolCreationUpdate @aws_iam
 
-  createWorkflow(input: CreateWorkflowInput): AWSJSON
   startAssessment(jobId: String, streaming: Boolean): AWSJSON
   startDeployment(jobId: String): AWSJSON
 }

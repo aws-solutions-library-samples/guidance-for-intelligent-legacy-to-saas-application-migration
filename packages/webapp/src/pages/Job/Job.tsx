@@ -10,6 +10,7 @@ import {
   BreadcrumbGroup,
   Spinner,
   Button,
+  Alert,
 } from "@cloudscape-design/components";
 
 export const Job = () => {
@@ -17,21 +18,6 @@ export const Job = () => {
   const navigate = useNavigate();
 
   const getJobQuery = useGraphQLQuery("getJob", { jobId });
-
-  const tabOptions = [
-    {
-      name: "Details",
-      panel: <Details getJobQuery={getJobQuery} />,
-    },
-    {
-      name: "Workflow Builder",
-      panel: <WorkflowBuilder getJobQuery={getJobQuery} />,
-    },
-    {
-      name: "Assessment",
-      panel: <Assessment getJobQuery={getJobQuery} />,
-    },
-  ];
 
   return (
     <>
@@ -66,31 +52,50 @@ export const Job = () => {
       <TabGroup className="mt-3">
         <TabList className="flex justify-between">
           <div className="bg-slate-800 rounded-md p-1">
-            {tabOptions.map(({ name }) => (
-              <Tab
-                key={name}
-                className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none"
-              >
-                {name}
-              </Tab>
-            ))}
+            <Tab className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:text-gray-600 disabled:hover:bg-transparent rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none">
+              Details
+            </Tab>
+
+            {getJobQuery.data?.getJob?.kb && getJobQuery.data.getJob.s3Uri && (
+              <>
+                <Tab className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:text-gray-600 disabled:hover:bg-transparent rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none">
+                  Workflow Builder
+                </Tab>
+
+                <Tab className="hover:cursor-pointer data-selected:bg-slate-700 data-selected:text-cyan-400 [&:not([data-selected])]:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 disabled:text-gray-600 disabled:hover:bg-transparent rounded-sm px-3 py-1.5 text-sm! font-medium! transition-all! focus-visible:outline-none">
+                  Assessment
+                </Tab>
+              </>
+            )}
           </div>
         </TabList>
 
         <TabPanels className="mt-3 border border-slate-800 rounded-lg">
-          {tabOptions.map(({ name, panel }) => (
-            <TabPanel key={name} className="rounded-xl bg-white/5 p-6">
-              {getJobQuery.isLoading ? (
-                <div className="text-white">
-                  <Spinner size="big" />
-                </div>
-              ) : getJobQuery.isError ? (
-                <pre>{JSON.stringify(getJobQuery.error, null, 2)}</pre>
-              ) : (
-                panel
-              )}
+          {getJobQuery.isLoading ? (
+            <TabPanel className="rounded-xl bg-white/5 p-6 text-white">
+              <Spinner size="big" />
             </TabPanel>
-          ))}
+          ) : getJobQuery.isError ? (
+            <TabPanel className="rounded-xl bg-white/5 p-6 text-white">
+              <Alert type="error">
+                <pre>{JSON.stringify(getJobQuery.error, null, 2)}</pre>
+              </Alert>
+            </TabPanel>
+          ) : (
+            <>
+              <TabPanel className="rounded-xl bg-white/5 p-6">
+                <Details getJobQuery={getJobQuery} />
+              </TabPanel>
+
+              <TabPanel className="rounded-xl bg-white/5 p-6">
+                <WorkflowBuilder getJobQuery={getJobQuery} />
+              </TabPanel>
+
+              <TabPanel className="rounded-xl bg-white/5 p-6">
+                <Assessment getJobQuery={getJobQuery} />
+              </TabPanel>
+            </>
+          )}
         </TabPanels>
       </TabGroup>
     </>

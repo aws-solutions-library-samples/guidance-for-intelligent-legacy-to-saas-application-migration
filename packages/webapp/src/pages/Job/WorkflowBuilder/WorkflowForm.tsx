@@ -15,6 +15,7 @@ import {
   Header,
   Table,
   Input,
+  Alert,
 } from "@cloudscape-design/components";
 import toast from "react-hot-toast";
 import { useGraphQLMutation } from "../../../hooks/useTanStackQuery";
@@ -33,11 +34,7 @@ export const WorkflowForm = ({ refetch }: IWorkflowForm) => {
   const { jobId } = useParams();
   const createWorkflow = useGraphQLMutation("createWorkflow");
 
-  const {
-    handleSubmit,
-    control,
-    formState: { isSubmitting },
-  } = useForm<WorkflowFormInput>({
+  const { handleSubmit, control } = useForm<WorkflowFormInput>({
     defaultValues: {
       agents: [
         {
@@ -67,36 +64,6 @@ For each infrastructure component, determine:
 
 OUTPUT REQUIREMENTS:
 Provide structured findings that classify each infrastructure component into the contingency categories with specific remediation requirements and timelines.`,
-        },
-        {
-          systemPrompt: `You are a Migration Strategy Planning Agent responsible for assessing migration readiness and identifying planning contingencies.
-
-INPUTS:
-- Knowledge base with migration methodologies and best practices
-- S3 URI containing application dependencies and infrastructure maps
-
-YOUR TASKS:
-1. Map application dependencies and migration waves
-2. Assess migration tool compatibility
-3. Identify scheduling constraints and downtime windows
-4. Evaluate rollback capabilities
-5. Document migration prerequisites
-
-CLASSIFICATION CRITERIA:
-- GO: Clear migration path, tools ready, dependencies mapped
-- GO_WITH_CONDITIONS: Missing prerequisites, unclear dependencies, tool limitations
-- NO_GO: Critical dependencies unresolved, no viable migration path
-
-For each workload group, determine:
-- Migration readiness status
-- Missing prerequisites
-- Dependency resolution requirements
-- Estimated migration window (hours)
-- Business impact level
-
-OUTPUT REQUIREMENTS:
-Classify workloads into contingency categories based on migration readiness, dependencies, and tool availability.
-`,
         },
       ],
       rowCategories: [
@@ -178,7 +145,7 @@ Classify workloads into contingency categories based on migration readiness, dep
             headerText={`Agent ${index + 1}`}
             headerActions={
               <Button
-                disabled={isSubmitting}
+                disabled={createWorkflow.isPending}
                 variant="icon"
                 iconName="close"
                 onClick={() => agents.remove(index)}
@@ -187,37 +154,45 @@ Classify workloads into contingency categories based on migration readiness, dep
           >
             <Controller
               name={`agents.${index}.systemPrompt`}
+              rules={{ required: true }}
               control={control}
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormField
                   label="Agent Responsibilities"
                   description={`Define what agent should do in this workflow`}
+                  errorText={fieldState.error?.type}
+                  stretch
                 >
                   <Textarea
                     {...field}
                     onChange={({ detail }) => field.onChange(detail.value)}
                     name={`agents.${index}.systemPrompt`}
                     placeholder={`Describe agent's role and responsibilities...`}
-                    rows={4}
-                    disabled={isSubmitting}
+                    rows={10}
+                    disabled={createWorkflow.isPending}
                   />
                 </FormField>
               )}
             />
           </ExpandableSection>
         ))}
+        {!agents.fields.length && (
+          <Alert type="error">A minimum of one agent is required</Alert>
+        )}
         <Button
           formAction="none"
           onClick={() => agents.append({ systemPrompt: "" })}
           iconName="add-plus"
-          disabled={isSubmitting}
+          disabled={createWorkflow.isPending}
         >
           Add Agent
         </Button>
 
-        <Header>Assessment Schema</Header>
+        <Header className="mt-7" variant="h3">
+          Output table schema
+        </Header>
 
-        <ExpandableSection headerText={`Column Categories`} defaultExpanded>
+        <ExpandableSection headerText={`Column Categories`}>
           <SpaceBetween size="l">
             {columnCategories.fields.map((_, index) => (
               <>
@@ -230,7 +205,7 @@ Classify workloads into contingency categories based on migration readiness, dep
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Name...`}
-                        disabled={isSubmitting}
+                        disabled={createWorkflow.isPending}
                       />
                     </FormField>
                   )}
@@ -244,7 +219,7 @@ Classify workloads into contingency categories based on migration readiness, dep
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Description...`}
-                        disabled={isSubmitting}
+                        disabled={createWorkflow.isPending}
                       />
                     </FormField>
                   )}
@@ -257,14 +232,14 @@ Classify workloads into contingency categories based on migration readiness, dep
                 columnCategories.append({ name: "", description: "" })
               }
               iconName="add-plus"
-              disabled={isSubmitting}
+              disabled={createWorkflow.isPending}
             >
               Add
             </Button>
           </SpaceBetween>
         </ExpandableSection>
 
-        <ExpandableSection headerText={`Row Categories`} defaultExpanded>
+        <ExpandableSection headerText={`Row Categories`}>
           <SpaceBetween size="l">
             {rowCategories.fields.map((_, index) => (
               <>
@@ -277,7 +252,7 @@ Classify workloads into contingency categories based on migration readiness, dep
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Name...`}
-                        disabled={isSubmitting}
+                        disabled={createWorkflow.isPending}
                       />
                     </FormField>
                   )}
@@ -291,7 +266,7 @@ Classify workloads into contingency categories based on migration readiness, dep
                         {...field}
                         onChange={({ detail }) => field.onChange(detail.value)}
                         placeholder={`Description...`}
-                        disabled={isSubmitting}
+                        disabled={createWorkflow.isPending}
                       />
                     </FormField>
                   )}
@@ -304,7 +279,7 @@ Classify workloads into contingency categories based on migration readiness, dep
                 rowCategories.append({ name: "", description: "" })
               }
               iconName="add-plus"
-              disabled={isSubmitting}
+              disabled={createWorkflow.isPending}
             >
               Add
             </Button>
@@ -336,10 +311,16 @@ Classify workloads into contingency categories based on migration readiness, dep
           />
         )}
 
+        {createWorkflow.isError && (
+          <Alert type="error">
+            <pre>{JSON.stringify(createWorkflow.error, null, 2)}</pre>
+          </Alert>
+        )}
+
         <Box float="right">
           <Button
             variant="primary"
-            loading={isSubmitting}
+            loading={createWorkflow.isPending}
             disabled={!agents.fields.length}
           >
             Create Workflow
