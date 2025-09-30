@@ -64,7 +64,7 @@ export const handler = async (event: IHandler, context: Context) => {
   const agentInvokeReferences = agents
     .map(
       (_, index) =>
-        `agent_${index + 1}_response = agent.tool.agent_${
+        `response['agent_${index + 1}_response'] = agent.tool.agent_${
           index + 1
         }(query=f'S3 URI is: {payload["s3Uri"]}')`
     )

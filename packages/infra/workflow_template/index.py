@@ -36,12 +36,14 @@ def invoke(payload):
     """Process user input and return a response"""
     # crawl_file("index.py")
 
+    response = {}
+
     # Invoke agents here
+
+    print({"Response": response})
 
     return {
         "trace": trace,
-        "agent_1_response": agent_1_response,
-        "agent_2_response": agent_2_response,
     }
 
 
