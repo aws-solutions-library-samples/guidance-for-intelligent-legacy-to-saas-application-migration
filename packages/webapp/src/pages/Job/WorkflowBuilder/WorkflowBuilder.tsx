@@ -87,6 +87,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
                   variant="inline-link"
                 >
                   <Avatar
+                    iconName="add-plus"
                     ariaLabel="Create tool with GenAI"
                     color="gen-ai"
                     tooltipText="Create a tool with GenAI"
