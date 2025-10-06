@@ -119,13 +119,20 @@ type ToolCreationUpdate @aws_iam {
   eventId: String!
 }
 
+type CodeBuildDetails {
+  id: String
+  projectName: String
+  logs: AWSJSON
+  buildStatus: String
+}
+
 type Query {
   getDashboardMetrics: DashboardMetrics
   listKnowledgeBases: KnowledgeBaseConnection
   listJobs(limit: Int, nextToken: String): JobConnection
   getJob(jobId: ID): Job
 
-  getCodeBuild(codebuildArn: String): AWSJSON
+  getCodeBuild(codebuildArn: String): CodeBuildDetails
   describeExecution(executionArn: String!): AWSJSON
   listInferenceProfiles: InferenceProfileConnection
 }

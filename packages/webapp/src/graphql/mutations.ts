@@ -92,6 +92,20 @@ export const deleteJob = /* GraphQL */ `mutation DeleteJob($jobId: String!) {
   APITypes.DeleteJobMutationVariables,
   APITypes.DeleteJobMutation
 >;
+export const createWorkflow = /* GraphQL */ `mutation CreateWorkflow($input: CreateWorkflowInput) {
+  createWorkflow(input: $input)
+}
+` as GeneratedMutation<
+  APITypes.CreateWorkflowMutationVariables,
+  APITypes.CreateWorkflowMutation
+>;
+export const startDeployment = /* GraphQL */ `mutation StartDeployment($jobId: String) {
+  startDeployment(jobId: $jobId)
+}
+` as GeneratedMutation<
+  APITypes.StartDeploymentMutationVariables,
+  APITypes.StartDeploymentMutation
+>;
 export const createTool = /* GraphQL */ `mutation CreateTool(
   $jobId: String
   $prompt: String
@@ -122,24 +136,10 @@ export const publishToolCreationUpdate = /* GraphQL */ `mutation PublishToolCrea
   APITypes.PublishToolCreationUpdateMutationVariables,
   APITypes.PublishToolCreationUpdateMutation
 >;
-export const createWorkflow = /* GraphQL */ `mutation CreateWorkflow($input: CreateWorkflowInput) {
-  createWorkflow(input: $input)
-}
-` as GeneratedMutation<
-  APITypes.CreateWorkflowMutationVariables,
-  APITypes.CreateWorkflowMutation
->;
 export const startAssessment = /* GraphQL */ `mutation StartAssessment($jobId: String, $streaming: Boolean) {
   startAssessment(jobId: $jobId, streaming: $streaming)
 }
 ` as GeneratedMutation<
   APITypes.StartAssessmentMutationVariables,
   APITypes.StartAssessmentMutation
->;
-export const startDeployment = /* GraphQL */ `mutation StartDeployment($jobId: String) {
-  startDeployment(jobId: $jobId)
-}
-` as GeneratedMutation<
-  APITypes.StartDeploymentMutationVariables,
-  APITypes.StartDeploymentMutation
 >;

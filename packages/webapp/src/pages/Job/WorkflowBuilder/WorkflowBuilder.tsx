@@ -68,8 +68,8 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
                   formAction="none"
                   variant="primary"
                   disabled={
-                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
-                      .builds?.[0].buildStatus == "IN_PROGRESS"
+                    codebuildJob.data?.getCodeBuild?.buildStatus ==
+                    "IN_PROGRESS"
                   }
                   loading={startDeployment.isPending}
                   onClick={() => startDeployment.mutate({ jobId })}
@@ -100,9 +100,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
           Workflow Builder
         </Header>
 
-        {codebuildJob.data && (
-          <Deployment codebuildArn={getJobQuery.data?.getJob?.codebuildArn} />
-        )}
+        {codebuildJob.data && <Deployment codebuildJob={codebuildJob} />}
 
         {!!listS3.data?.items.length && (
           <Box>

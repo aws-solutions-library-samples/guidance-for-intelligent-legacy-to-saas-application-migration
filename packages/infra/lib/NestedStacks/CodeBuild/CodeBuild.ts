@@ -161,6 +161,7 @@ export class CodeBuild extends Construct {
                       --agent-runtime-id "$AGENTCORE_ID" \
                       --agent-runtime-artifact containerConfiguration={containerUri=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG} \
                       --role-arn $AGENTCORE_ROLE_ARN \
+                      --environment-variables S3_BUCKET_NAME=$S3_BUCKET \
                       --network-configuration networkMode=PUBLIC
               else
                   echo "No agentcore_id found - Running create-agent-runtime"
@@ -170,6 +171,7 @@ export class CodeBuild extends Construct {
                                         --agent-runtime-name $RUNTIME_NAME \
                                         --agent-runtime-artifact containerConfiguration={containerUri=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG} \
                                         --role-arn $AGENTCORE_ROLE_ARN \
+                                        --environment-variables S3_BUCKET_NAME=$S3_BUCKET \
                                         --network-configuration networkMode=PUBLIC); then
                       echo "Created runtime: $CREATED_RUNTIME"
                   else

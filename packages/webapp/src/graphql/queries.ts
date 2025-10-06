@@ -8,37 +8,44 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
-export const getJob = /* GraphQL */ `query GetJob($jobId: ID) {
-  getJob(jobId: $jobId) {
-    jobId
-    name
-    description
-    createdAt
-    updatedAt
-    s3Uri
-    executionArn
-    codebuildArn
-    kb {
-      label
-      value
+export const getDashboardMetrics = /* GraphQL */ `query GetDashboardMetrics {
+  getDashboardMetrics {
+    jobs {
+      ItemCount
+      ItemCountLastWeek
+      TableSizeBytes
+      TableSizeBytesLastWeek
       __typename
     }
-    model {
-      label
-      value
+    sfnAssessments {
+      ExecutionsStartedLastWeek
       __typename
     }
-    agentcoreId
+    totalKbs
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetJobQueryVariables, APITypes.GetJobQuery>;
-export const getCodeBuild = /* GraphQL */ `query GetCodeBuild($codebuildArn: String) {
-  getCodeBuild(codebuildArn: $codebuildArn)
+` as GeneratedQuery<
+  APITypes.GetDashboardMetricsQueryVariables,
+  APITypes.GetDashboardMetricsQuery
+>;
+export const listKnowledgeBases = /* GraphQL */ `query ListKnowledgeBases {
+  listKnowledgeBases {
+    knowledgeBaseSummaries {
+      description
+      knowledgeBaseId
+      name
+      status
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
 }
 ` as GeneratedQuery<
-  APITypes.GetCodeBuildQueryVariables,
-  APITypes.GetCodeBuildQuery
+  APITypes.ListKnowledgeBasesQueryVariables,
+  APITypes.ListKnowledgeBasesQuery
 >;
 export const listJobs = /* GraphQL */ `query ListJobs($limit: Int, $nextToken: String) {
   listJobs(limit: $limit, nextToken: $nextToken) {
@@ -69,30 +76,50 @@ export const listJobs = /* GraphQL */ `query ListJobs($limit: Int, $nextToken: S
   }
 }
 ` as GeneratedQuery<APITypes.ListJobsQueryVariables, APITypes.ListJobsQuery>;
+export const getJob = /* GraphQL */ `query GetJob($jobId: ID) {
+  getJob(jobId: $jobId) {
+    jobId
+    name
+    description
+    createdAt
+    updatedAt
+    s3Uri
+    executionArn
+    codebuildArn
+    kb {
+      label
+      value
+      __typename
+    }
+    model {
+      label
+      value
+      __typename
+    }
+    agentcoreId
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetJobQueryVariables, APITypes.GetJobQuery>;
+export const getCodeBuild = /* GraphQL */ `query GetCodeBuild($codebuildArn: String) {
+  getCodeBuild(codebuildArn: $codebuildArn) {
+    id
+    projectName
+    logs
+    buildStatus
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetCodeBuildQueryVariables,
+  APITypes.GetCodeBuildQuery
+>;
 export const describeExecution = /* GraphQL */ `query DescribeExecution($executionArn: String!) {
   describeExecution(executionArn: $executionArn)
 }
 ` as GeneratedQuery<
   APITypes.DescribeExecutionQueryVariables,
   APITypes.DescribeExecutionQuery
->;
-export const listKnowledgeBases = /* GraphQL */ `query ListKnowledgeBases {
-  listKnowledgeBases {
-    knowledgeBaseSummaries {
-      description
-      knowledgeBaseId
-      name
-      status
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListKnowledgeBasesQueryVariables,
-  APITypes.ListKnowledgeBasesQuery
 >;
 export const listInferenceProfiles = /* GraphQL */ `query ListInferenceProfiles {
   listInferenceProfiles {
@@ -115,25 +142,4 @@ export const listInferenceProfiles = /* GraphQL */ `query ListInferenceProfiles 
 ` as GeneratedQuery<
   APITypes.ListInferenceProfilesQueryVariables,
   APITypes.ListInferenceProfilesQuery
->;
-export const getDashboardMetrics = /* GraphQL */ `query GetDashboardMetrics {
-  getDashboardMetrics {
-    jobs {
-      ItemCount
-      ItemCountLastWeek
-      TableSizeBytes
-      TableSizeBytesLastWeek
-      __typename
-    }
-    sfnAssessments {
-      ExecutionsStartedLastWeek
-      __typename
-    }
-    totalKbs
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetDashboardMetricsQueryVariables,
-  APITypes.GetDashboardMetricsQuery
 >;

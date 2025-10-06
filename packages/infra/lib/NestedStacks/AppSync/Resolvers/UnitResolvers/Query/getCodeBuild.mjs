@@ -23,7 +23,5 @@ export const response = (ctx) => {
   if (result.statusCode !== 200) {
     return util.error(result.body, `${result.statusCode}`);
   }
-  const body = JSON.parse(result.body);
-
-  return body;
+  return JSON.parse(result.body).builds[0];
 };

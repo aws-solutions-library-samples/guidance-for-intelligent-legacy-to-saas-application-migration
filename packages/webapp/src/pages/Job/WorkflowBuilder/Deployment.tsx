@@ -5,19 +5,19 @@ import {
   Link,
   Spinner,
 } from "@cloudscape-design/components";
-import { useGraphQLQuery } from "../../../hooks/useTanStackQuery";
+import type {
+  DefinedQueryObserverResult,
+  QueryObserverPlaceholderResult,
+} from "@tanstack/react-query";
+import type { GetCodeBuildQuery } from "../../../API";
 
 interface IDeployment {
-  codebuildArn?: string | null;
+  codebuildJob:
+    | DefinedQueryObserverResult<GetCodeBuildQuery, Error>
+    | QueryObserverPlaceholderResult<GetCodeBuildQuery, Error>;
 }
 
-export const Deployment = ({ codebuildArn }: IDeployment) => {
-  const codebuildJob = useGraphQLQuery("getCodeBuild", {
-    codebuildArn,
-  });
-
-  JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}");
-
+export const Deployment = ({ codebuildJob }: IDeployment) => {
   return (
     <ColumnLayout className="mt-3" columns={1}>
       <Box>
@@ -36,12 +36,8 @@ export const Deployment = ({ codebuildArn }: IDeployment) => {
                   href={`https://${
                     import.meta.env.VITE_REGION
                   }.console.aws.amazon.com/codesuite/codebuild/projects/${
-                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
-                      .builds?.[0].projectName
-                  }/build/${
-                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
-                      .builds?.[0].id
-                  }`}
+                    codebuildJob.data?.getCodeBuild?.projectName
+                  }/build/${codebuildJob.data?.getCodeBuild?.id}`}
                 >
                   Link
                 </Link>
@@ -57,8 +53,8 @@ export const Deployment = ({ codebuildArn }: IDeployment) => {
                 <Link
                   external
                   href={
-                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
-                      .builds?.[0].logs.deepLink
+                    JSON.parse(codebuildJob.data?.getCodeBuild?.logs ?? "{}")
+                      .deepLink
                   }
                 >
                   Link
@@ -75,10 +71,7 @@ export const Deployment = ({ codebuildArn }: IDeployment) => {
                 <Spinner />
               ) : (
                 <pre className="whitespace-pre-wrap">
-                  {
-                    JSON.parse(codebuildJob.data?.getCodeBuild ?? "{}")
-                      .builds?.[0].buildStatus
-                  }
+                  {codebuildJob.data?.getCodeBuild?.buildStatus}
                 </pre>
               ),
             },
