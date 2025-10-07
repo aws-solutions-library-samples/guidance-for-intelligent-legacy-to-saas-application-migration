@@ -35,50 +35,6 @@ import {
   Toggle,
 } from "@cloudscape-design/components";
 
-interface ActionItem {
-  message?: {
-    role: string;
-    content: MessageContent[];
-  };
-}
-
-interface MessageContent {
-  text?: string;
-  toolUse?: {
-    name: string;
-    input: unknown;
-  };
-  toolResult?: {
-    status:
-      | "success"
-      | "error"
-      | "warning"
-      | "info"
-      | "in-progress"
-      | "stopped";
-    content: { text: string }[];
-  };
-  reasoningContent?: {
-    reasoningText: {
-      text: string;
-    };
-  };
-}
-
-interface AssessmentItem {
-  type: string;
-  teamcenter_artifact_name: string;
-  detailed_summary: string;
-  tier: "standard" | "advanced" | "premium";
-}
-
-interface AssessmentTableRow {
-  classification: string;
-  standard: { name: string; summary: string }[];
-  advanced: { name: string; summary: string }[];
-  premium: { name: string; summary: string }[];
-}
-
 type SettingInputs = {
   model: {
     label: string;
@@ -102,67 +58,55 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
   const foundationModelsQuery = useGraphQLQuery("listInferenceProfiles");
   const updateJobMutation = useGraphQLMutation("updateJob");
 
-  const tree = useGetS3Json(`jobs/${jobId}/tree.json`);
-  const flow = useGetS3Json(`jobs/${jobId}/flow.json`);
   const assessment = useGetS3Json(`jobs/${jobId}/assessment.json`);
-  const executiveSummary = useGetS3Json(`jobs/${jobId}/executive_summary.json`);
 
-  const [assessmentTbl, setAssessmentTbl] = useState<AssessmentTableRow[]>([]);
+  const [assessmentTbl, setAssessmentTbl] = useState({});
   const [summaryWindow, setSummaryWindow] = useState("");
 
   const { control, handleSubmit } = useForm<SettingInputs>();
 
+  console.log(getJobQuery.data?.getJob?.row?.L);
+
   useEffect(() => {
-    const assessmentTblData: AssessmentTableRow[] =
-      getJobQuery.data?.getJob?.row?.L?.map((row) => {
-        return {
-          classification: row?.SS?.[0] ?? "",
-          ...getJobQuery.data?.getJob?.column?.L?.map((item) => {
-            return {
-              [item?.SS?.[0] ?? ""]: [],
-            };
-          }),
-        };
-      });
+    const tableMap = {};
 
-    if (assessment.data && Array.isArray(assessment.data)) {
-      for (const element of assessment.data as AssessmentItem[]) {
-        if (
-          !element.type ||
-          !element.tier ||
-          !element.teamcenter_artifact_name
-        ) {
-          console.warn("Invalid assessment item:", element);
-          continue;
-        }
-
-        const classificationIndex =
-          element.type.toLowerCase() === "feature"
-            ? 0
-            : element.type.toLowerCase() === "configuration"
-            ? 1
-            : element.type.toLowerCase() === "customization"
-            ? 2
-            : -1;
-
-        if (
-          classificationIndex >= 0 &&
-          ["standard", "advanced", "premium"].includes(
-            element.tier.toLowerCase()
-          )
-        ) {
-          assessmentTblData[classificationIndex][element.tier].push({
-            name: element.teamcenter_artifact_name,
+    if (
+      assessment.data?.parse_results &&
+      Array.isArray(assessment.data.parse_results)
+    ) {
+      for (const element of assessment.data.parse_results) {
+        if (Array.isArray(tableMap[`${element.rows}${element.columns}`])) {
+          tableMap[`${element.rows}${element.columns}`].push({
+            name: element.artifact_name,
             summary: element.detailed_summary || "",
           });
         } else {
-          console.warn("Unknown classification or tier:", element);
+          tableMap[`${element.rows}${element.columns}`] = [
+            {
+              name: element.artifact_name,
+              summary: element.detailed_summary || "",
+            },
+          ];
         }
+
+        // const classificationIndex =
+        //   getJobQuery.data?.getJob?.row?.L?.findIndex(
+        //     (rows) =>
+        //       element.rows.toLowerCase() === rows?.SS?.[0]?.toLowerCase()
+        //   ) ?? -1;
+
+        // if (classificationIndex) {
+        //   assessmentTblData?.[classificationIndex]?.[element.columns]?.push({
+        //     name: element.artifact_name,
+        //     summary: element.detailed_summary || "",
+        //   });
+        // }
       }
     }
 
-    setAssessmentTbl(assessmentTblData);
-  }, [assessment.data]);
+    console.log(tableMap);
+    setAssessmentTbl(tableMap);
+  }, [assessment.data?.parse_results]);
 
   const onSubmit: SubmitHandler<SettingInputs> = async (data) => {
     const { streaming } = data;
@@ -320,209 +264,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
           </Alert>
         ) : (
           <>
-            {tree.data && (
-              <Box>
-                <Header variant="h3" className="mb-3">
-                  Workflow Visualization
-                </Header>
-
-                <WorkflowVisualizerWrapper data={tree.data} />
-              </Box>
-            )}
-
-            {flow.data && (
-              <Box>
-                <Header variant="h3" className="my-3">
-                  Agentic Flow
-                </Header>
-
-                {flow.data?.agent_order.map((agent: string, index: number) => {
-                  return (
-                    <ExpandableSection
-                      headerText={`${index + 1}. ${agent}`}
-                      key={index}
-                    >
-                      <Container>
-                        <SpaceBetween size="xxs">
-                          {flow.data.agent_workflows[agent].map(
-                            (action: ActionItem) => {
-                              if (action.message) {
-                                return action.message.content.map(
-                                  (message: MessageContent) => {
-                                    if (message.text) {
-                                      return (
-                                        <ChatBubble
-                                          ariaLabel={"chat"}
-                                          type={
-                                            action.message?.role == "assistant"
-                                              ? "incoming"
-                                              : "outgoing"
-                                          }
-                                          avatar={
-                                            <Avatar
-                                              ariaLabel={"chat"}
-                                              tooltipText={
-                                                action.message?.role ==
-                                                "assistant"
-                                                  ? "Strands Agent"
-                                                  : "Tool Response"
-                                              }
-                                              color="gen-ai"
-                                              iconName="gen-ai"
-                                            />
-                                          }
-                                        >
-                                          <pre className="revert-tailwind whitespace-pre-wrap leading-none">
-                                            <MarkdownHooks
-                                              remarkPlugins={[remarkGfm]}
-                                            >
-                                              {message.text}
-                                            </MarkdownHooks>
-                                          </pre>
-                                        </ChatBubble>
-                                      );
-                                    } else if (message.toolUse) {
-                                      return (
-                                        <ChatBubble
-                                          ariaLabel={"toolUse"}
-                                          type={"incoming"}
-                                          hideAvatar
-                                          avatar={
-                                            <Avatar ariaLabel={"toolUse"} />
-                                          }
-                                        >
-                                          <KeyValuePairs
-                                            items={[
-                                              {
-                                                label: "toolUse",
-                                                value: message.toolUse.name,
-                                              },
-                                              {
-                                                label: "input",
-                                                value: (
-                                                  <pre className="whitespace-pre-wrap">
-                                                    {JSON.stringify(
-                                                      message.toolUse.input,
-                                                      null,
-                                                      2
-                                                    )}
-                                                  </pre>
-                                                ),
-                                              },
-                                            ]}
-                                          />
-                                        </ChatBubble>
-                                      );
-                                    } else if (message.toolResult) {
-                                      return (
-                                        <ChatBubble
-                                          ariaLabel={"toolResult"}
-                                          type={"outgoing"}
-                                          actions={
-                                            <StatusIndicator
-                                              type={message.toolResult.status}
-                                            >
-                                              {capitalize(
-                                                message.toolResult.status
-                                              )}
-                                            </StatusIndicator>
-                                          }
-                                          avatar={
-                                            <Avatar
-                                              ariaLabel={"toolResult"}
-                                              tooltipText={"Tool Result"}
-                                            />
-                                          }
-                                        >
-                                          <ExpandableSection headerText="toolResult">
-                                            <pre className="revert-tailwind whitespace-pre-wrap leading-none">
-                                              <MarkdownHooks
-                                                remarkPlugins={[remarkGfm]}
-                                              >
-                                                {
-                                                  message.toolResult.content[0]
-                                                    .text
-                                                }
-                                              </MarkdownHooks>
-                                            </pre>
-                                          </ExpandableSection>
-                                        </ChatBubble>
-                                      );
-                                    }
-                                    if (
-                                      message.reasoningContent?.reasoningText
-                                    ) {
-                                      return (
-                                        <ChatBubble
-                                          ariaLabel={"chat"}
-                                          type={"outgoing"}
-                                          avatar={
-                                            <Avatar
-                                              ariaLabel={"chat"}
-                                              tooltipText={
-                                                "AI reasoning with itself"
-                                              }
-                                              iconName="gen-ai"
-                                            />
-                                          }
-                                        >
-                                          <KeyValuePairs
-                                            items={[
-                                              {
-                                                label: "Reasoning",
-                                                value: (
-                                                  <pre className="whitespace-pre-wrap">
-                                                    {
-                                                      message.reasoningContent
-                                                        ?.reasoningText.text
-                                                    }
-                                                  </pre>
-                                                ),
-                                              },
-                                            ]}
-                                          />
-                                        </ChatBubble>
-                                      );
-                                    }
-                                    return (
-                                      <pre className="whitespace-pre-wrap">
-                                        {JSON.stringify(message, null, 2)}
-                                      </pre>
-                                    );
-                                  }
-                                );
-                              }
-                              return (
-                                <pre>{JSON.stringify(action, null, 2)}</pre>
-                              );
-                            }
-                          )}
-                        </SpaceBetween>
-                      </Container>
-                    </ExpandableSection>
-                  );
-                })}
-              </Box>
-            )}
-
-            {executiveSummary.data && (
-              <>
-                <Header variant="h3" className="mt-5">
-                  Executive Summary
-                </Header>
-                <ExpandableSection headerText={"Learn more"}>
-                  <Container className="bg-[#0f141a]!">
-                    <pre className="revert-tailwind leading-none whitespace-pre-wrap">
-                      <MarkdownHooks remarkPlugins={[remarkGfm]}>
-                        {executiveSummary.data.executive_summary}
-                      </MarkdownHooks>
-                    </pre>
-                  </Container>
-                </ExpandableSection>
-              </>
-            )}
-
-            {assessment.data && (
+            {true && (
               <Container className="mt-5 bg-[#FAF9F6]!">
                 <Header variant="h3">
                   <span className="text-black">Assessment Table</span>
@@ -532,12 +274,15 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                   contentDensity="compact"
                   columnDefinitions={[
                     {
-                      id: "classification",
                       header: null,
                       cell: (item) => (
-                        <Box fontWeight="bold" className="text-black!">
-                          {item.classification}
-                        </Box>
+                        console.log(name),
+                        console.log("name"),
+                        (
+                          <Box fontWeight="bold" className="text-black!">
+                            {item.name}
+                          </Box>
+                        )
                       ),
                     },
                     ...(getJobQuery.data?.getJob?.column?.L?.map((item) => {
@@ -547,7 +292,8 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                         ),
                         cell: (item: any) => (
                           <SpaceBetween size="xxxs">
-                            {item.standard?.map(
+                            "hello"
+                            {/* {item.standard?.map(
                               (feature: any, index: number) => (
                                 <Button
                                   formAction="none"
@@ -560,7 +306,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                                   {feature.name}
                                 </Button>
                               )
-                            )}
+                            )} */}
                           </SpaceBetween>
                         ),
                       };
@@ -621,7 +367,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                     //   ),
                     // },
                   ]}
-                  items={assessmentTbl}
+                  items={getJobQuery.data?.getJob?.row?.L ?? []}
                   variant="borderless"
                   wrapLines
                 />
