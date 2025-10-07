@@ -28,6 +28,7 @@ import {
   Select,
   FormField,
   Toggle,
+  Popover,
 } from "@cloudscape-design/components";
 
 type SettingInputs = {
@@ -268,18 +269,22 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                     {
                       header: null,
                       cell: (rowItem: RowItem) => (
-                        <Box fontWeight="bold" className="text-black!">
-                          {rowItem?.SS?.[0] || ""}
-                        </Box>
+                        <Popover content={rowItem?.SS?.[1]}>
+                          <Box fontWeight="bold" className="text-black!">
+                            {rowItem?.SS?.[0] || ""}
+                          </Box>
+                        </Popover>
                       ),
                     },
                     ...(getJobQuery.data?.getJob?.column?.L?.map(
                       (columnItem) => {
                         return {
                           header: (
-                            <span className="text-black">
-                              {columnItem?.SS?.[0]}
-                            </span>
+                            <Popover content={columnItem?.SS?.[1]}>
+                              <span className="text-black font-bold">
+                                {columnItem?.SS?.[0]}
+                              </span>
+                            </Popover>
                           ),
                           cell: (rowItem: RowItem) => (
                             <SpaceBetween size="xxxs">
