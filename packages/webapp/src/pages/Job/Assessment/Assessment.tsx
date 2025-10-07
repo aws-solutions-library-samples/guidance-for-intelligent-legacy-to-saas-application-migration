@@ -113,26 +113,17 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
   const { control, handleSubmit } = useForm<SettingInputs>();
 
   useEffect(() => {
-    const assessmentTblData: AssessmentTableRow[] = [
-      {
-        classification: "Features",
-        standard: [],
-        advanced: [],
-        premium: [],
-      },
-      {
-        classification: "Configurations",
-        standard: [],
-        advanced: [],
-        premium: [],
-      },
-      {
-        classification: "Customizations",
-        standard: [],
-        advanced: [],
-        premium: [],
-      },
-    ];
+    const assessmentTblData: AssessmentTableRow[] =
+      getJobQuery.data?.getJob?.row?.L?.map((row) => {
+        return {
+          classification: row?.SS?.[0] ?? "",
+          ...getJobQuery.data?.getJob?.column?.L?.map((item) => {
+            return {
+              [item?.SS?.[0] ?? ""]: [],
+            };
+          }),
+        };
+      });
 
     if (assessment.data && Array.isArray(assessment.data)) {
       for (const element of assessment.data as AssessmentItem[]) {
@@ -549,60 +540,86 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                         </Box>
                       ),
                     },
-                    {
-                      id: "tcxStandard",
-                      header: <span className="text-black">TCX Standard</span>,
-                      cell: (item) => (
-                        <SpaceBetween size="xxxs">
-                          {item.standard?.map((feature, index) => (
-                            <Button
-                              formAction="none"
-                              variant="link"
-                              onClick={() => setSummaryWindow(feature.summary)}
-                              key={index}
-                            >
-                              {feature.name}
-                            </Button>
-                          ))}
-                        </SpaceBetween>
-                      ),
-                    },
-                    {
-                      id: "tcxAdvanced",
-                      header: <span className="text-black">TCX Advanced</span>,
-                      cell: (item) => (
-                        <SpaceBetween size="xxxs">
-                          {item.advanced?.map((feature, index) => (
-                            <Button
-                              formAction="none"
-                              variant="link"
-                              onClick={() => setSummaryWindow(feature.summary)}
-                              key={index}
-                            >
-                              {feature.name}
-                            </Button>
-                          ))}
-                        </SpaceBetween>
-                      ),
-                    },
-                    {
-                      id: "tcxPremium",
-                      header: <span className="text-black">TCX Premium</span>,
-                      cell: (item) => (
-                        <SpaceBetween size="xxxs">
-                          {item.premium?.map((feature, index) => (
-                            <Button
-                              formAction="none"
-                              variant="link"
-                              onClick={() => setSummaryWindow(feature.summary)}
-                              key={index}
-                            >
-                              {feature.name}
-                            </Button>
-                          ))}
-                        </SpaceBetween>
-                      ),
-                    },
+                    ...(getJobQuery.data?.getJob?.column?.L?.map((item) => {
+                      return {
+                        header: (
+                          <span className="text-black">{item?.SS?.[0]}</span>
+                        ),
+                        cell: (item: any) => (
+                          <SpaceBetween size="xxxs">
+                            {item.standard?.map(
+                              (feature: any, index: number) => (
+                                <Button
+                                  formAction="none"
+                                  variant="link"
+                                  onClick={() =>
+                                    setSummaryWindow(feature.summary)
+                                  }
+                                  key={index}
+                                >
+                                  {feature.name}
+                                </Button>
+                              )
+                            )}
+                          </SpaceBetween>
+                        ),
+                      };
+                    }) ?? []),
+
+                    // {
+                    //   id: "tcxStandard",
+                    //   header: <span className="text-black">TCX Standard</span>,
+                    //   cell: (item) => (
+                    //     <SpaceBetween size="xxxs">
+                    //       {item.standard?.map((feature, index) => (
+                    //         <Button
+                    //           formAction="none"
+                    //           variant="link"
+                    //           onClick={() => setSummaryWindow(feature.summary)}
+                    //           key={index}
+                    //         >
+                    //           {feature.name}
+                    //         </Button>
+                    //       ))}
+                    //     </SpaceBetween>
+                    //   ),
+                    // },
+                    // {
+                    //   id: "tcxAdvanced",
+                    //   header: <span className="text-black">TCX Advanced</span>,
+                    //   cell: (item) => (
+                    //     <SpaceBetween size="xxxs">
+                    //       {item.advanced?.map((feature, index) => (
+                    //         <Button
+                    //           formAction="none"
+                    //           variant="link"
+                    //           onClick={() => setSummaryWindow(feature.summary)}
+                    //           key={index}
+                    //         >
+                    //           {feature.name}
+                    //         </Button>
+                    //       ))}
+                    //     </SpaceBetween>
+                    //   ),
+                    // },
+                    // {
+                    //   id: "tcxPremium",
+                    //   header: <span className="text-black">TCX Premium</span>,
+                    //   cell: (item) => (
+                    //     <SpaceBetween size="xxxs">
+                    //       {item.premium?.map((feature, index) => (
+                    //         <Button
+                    //           formAction="none"
+                    //           variant="link"
+                    //           onClick={() => setSummaryWindow(feature.summary)}
+                    //           key={index}
+                    //         >
+                    //           {feature.name}
+                    //         </Button>
+                    //       ))}
+                    //     </SpaceBetween>
+                    //   ),
+                    // },
                   ]}
                   items={assessmentTbl}
                   variant="borderless"

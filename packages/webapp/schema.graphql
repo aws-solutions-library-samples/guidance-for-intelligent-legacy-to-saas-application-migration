@@ -18,6 +18,14 @@ type JobConnection {
   nextToken: String
 }
 
+type StringSet {
+  SS: [String]
+}
+
+type DbbCategory {
+  L: [StringSet]
+}
+
 type Job {
   jobId: ID!
   name: String
@@ -30,6 +38,8 @@ type Job {
   kb: Select
   model: Select
   agentcoreId: String
+  column: DbbCategory
+  row: DbbCategory
 }
 
 type Select {

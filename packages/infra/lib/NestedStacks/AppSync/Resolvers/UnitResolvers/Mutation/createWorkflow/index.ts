@@ -54,29 +54,21 @@ export const handler = async (event: IHandler, context: Context) => {
     Key: { jobId },
     UpdateExpression: "SET #C = :c, #R = :r",
     ExpressionAttributeNames: {
-      "#C": "Column",
-      "#R": "Row",
+      "#C": "column",
+      "#R": "row",
     },
     ExpressionAttributeValues: {
       ":c": {
         L: columnCategories?.map(({ name, description }) => {
           return {
-            M: {
-              [name]: {
-                S: description,
-              },
-            },
+            SS: [name, description],
           };
         }),
       },
       ":r": {
         L: rowCategories?.map(({ name, description }) => {
           return {
-            M: {
-              [name]: {
-                S: description,
-              },
-            },
+            SS: [name, description],
           };
         }),
       },

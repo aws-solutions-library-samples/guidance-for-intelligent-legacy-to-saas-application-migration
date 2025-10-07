@@ -29,6 +29,20 @@ export const createJob = /* GraphQL */ `mutation CreateJob($input: CreateJobInpu
       __typename
     }
     agentcoreId
+    column {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
+    row {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
     __typename
   }
 }
@@ -57,6 +71,20 @@ export const updateJob = /* GraphQL */ `mutation UpdateJob($input: UpdateJobInpu
       __typename
     }
     agentcoreId
+    column {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
+    row {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
     __typename
   }
 }
@@ -85,6 +113,20 @@ export const deleteJob = /* GraphQL */ `mutation DeleteJob($jobId: String!) {
       __typename
     }
     agentcoreId
+    column {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
+    row {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
     __typename
   }
 }

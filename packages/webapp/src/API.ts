@@ -21,12 +21,24 @@ export type Job = {
   kb?: Select | null,
   model?: Select | null,
   agentcoreId?: string | null,
+  column?: DbbCategory | null,
+  row?: DbbCategory | null,
 };
 
 export type Select = {
   __typename: "Select",
   label: string,
   value: string,
+};
+
+export type DbbCategory = {
+  __typename: "DbbCategory",
+  L?:  Array<StringSet | null > | null,
+};
+
+export type StringSet = {
+  __typename: "StringSet",
+  SS?: Array< string | null > | null,
 };
 
 export type UpdateJobInput = {
@@ -176,6 +188,20 @@ export type CreateJobMutation = {
       value: string,
     } | null,
     agentcoreId?: string | null,
+    column?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
+    row?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
   } | null,
 };
 
@@ -205,6 +231,20 @@ export type UpdateJobMutation = {
       value: string,
     } | null,
     agentcoreId?: string | null,
+    column?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
+    row?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
   } | null,
 };
 
@@ -234,6 +274,20 @@ export type DeleteJobMutation = {
       value: string,
     } | null,
     agentcoreId?: string | null,
+    column?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
+    row?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
   } | null,
 };
 
@@ -355,6 +409,12 @@ export type ListJobsQuery = {
         value: string,
       } | null,
       agentcoreId?: string | null,
+      column?:  {
+        __typename: "DbbCategory",
+      } | null,
+      row?:  {
+        __typename: "DbbCategory",
+      } | null,
     } > | null,
     nextToken?: string | null,
   } | null,
@@ -386,6 +446,20 @@ export type GetJobQuery = {
       value: string,
     } | null,
     agentcoreId?: string | null,
+    column?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
+    row?:  {
+      __typename: "DbbCategory",
+      L?:  Array< {
+        __typename: "StringSet",
+        SS?: Array< string | null > | null,
+      } | null > | null,
+    } | null,
   } | null,
 };
 

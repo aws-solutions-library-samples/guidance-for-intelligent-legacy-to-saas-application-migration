@@ -132,15 +132,15 @@ You MUST use the parse_results tool to structure your response - do not provide 
         ),
     )
 
-    s3_client.put_object(
-        Bucket=os.environ["S3_BUCKET_NAME"],
-        Key=f"jobs/{payload['jobId']}/flow.json",
-        Body=json.dumps(trace),
-    )
+    # s3_client.put_object(
+    #     Bucket=os.environ["S3_BUCKET_NAME"],
+    #     Key=f"jobs/{payload['jobId']}/flow.json",
+    #     Body=json.dumps(trace),
+    # )
 
-    return {
-        "trace": trace,
-    }
+    # return {
+    #     "trace": trace,
+    # }
 
 
 if __name__ == "__main__":

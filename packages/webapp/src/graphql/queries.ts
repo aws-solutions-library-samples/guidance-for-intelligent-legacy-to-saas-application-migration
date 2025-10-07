@@ -69,6 +69,12 @@ export const listJobs = /* GraphQL */ `query ListJobs($limit: Int, $nextToken: S
         __typename
       }
       agentcoreId
+      column {
+        __typename
+      }
+      row {
+        __typename
+      }
       __typename
     }
     nextToken
@@ -97,6 +103,20 @@ export const getJob = /* GraphQL */ `query GetJob($jobId: ID) {
       __typename
     }
     agentcoreId
+    column {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
+    row {
+      L {
+        SS
+        __typename
+      }
+      __typename
+    }
     __typename
   }
 }
