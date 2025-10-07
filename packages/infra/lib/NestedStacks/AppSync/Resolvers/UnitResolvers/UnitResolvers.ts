@@ -274,17 +274,6 @@ export class UnitResolvers extends Construct {
         },
       },
       initialPolicy: [
-        // new iam.PolicyStatement({
-        //   actions: [
-        //     "bedrock:InvokeModel",
-        //     "bedrock:InvokeModelWithResponseStream",
-        //   ],
-        //   resources: ["*"],
-        // }),
-        // new iam.PolicyStatement({
-        //   actions: ["appsync:GraphQL"],
-        //   resources: [`${this.graphqlApi.arn}/*`],
-        // }),
         new iam.PolicyStatement({
           actions: ["s3:PutObject"],
           resources: [this.uiStorageBucket.arnForObjects(`jobs/*`)],
@@ -292,8 +281,10 @@ export class UnitResolvers extends Construct {
       ],
       environment: {
         S3_BUCKET_NAME: this.uiStorageBucket.bucketName,
+        tableName: this.ddbTable.tableName,
       },
     });
+    this.ddbTable.grantReadWriteData(createWorkflow);
 
     const ds = this.graphqlApi.addLambdaDataSource(
       "Create Workflow Ds",

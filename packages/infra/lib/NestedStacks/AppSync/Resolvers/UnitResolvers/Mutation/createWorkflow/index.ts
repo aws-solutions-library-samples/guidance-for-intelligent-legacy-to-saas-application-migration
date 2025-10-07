@@ -1,9 +1,14 @@
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+import { DynamoDB } from "@aws-sdk/client-dynamodb";
 import { Context } from "aws-lambda";
 import * as fs from "fs";
 import * as path from "path";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const s3Client = new S3Client({});
+
+const ddbClient = new DynamoDB({});
+const ddbDocClient = DynamoDBDocument.from(ddbClient);
 
 const uploadDirectoryToS3 = async (localDirPath: string, s3Prefix: string) => {
   const files = fs.readdirSync(localDirPath, { withFileTypes: true });
@@ -42,7 +47,41 @@ interface IHandler {
 }
 
 export const handler = async (event: IHandler, context: Context) => {
-  const { jobId, agents } = event;
+  const { jobId, agents, rowCategories, columnCategories } = event;
+
+  await ddbDocClient.update({
+    TableName: process.env.tableName,
+    Key: { jobId },
+    UpdateExpression: "SET #C = :c, #R = :r",
+    ExpressionAttributeNames: {
+      "#C": "Column",
+      "#R": "Row",
+    },
+    ExpressionAttributeValues: {
+      ":c": {
+        L: columnCategories?.map(({ name, description }) => {
+          return {
+            M: {
+              [name]: {
+                S: description,
+              },
+            },
+          };
+        }),
+      },
+      ":r": {
+        L: rowCategories?.map(({ name, description }) => {
+          return {
+            M: {
+              [name]: {
+                S: description,
+              },
+            },
+          };
+        }),
+      },
+    },
+  });
 
   await uploadDirectoryToS3(
     path.join(__dirname, "workflow_template"),
@@ -106,6 +145,47 @@ def ${agentName}(query: str) -> str:
   templateContent = templateContent.replace(
     "# Place tools here",
     `${agentTools}`
+  );
+
+  const columnHeaders = columnCategories
+    ?.map(({ name }) => {
+      return `"${name}"`;
+    })
+    .join(", ");
+
+  const columnDesc = columnCategories?.reduce(
+    (accumulator, { description }, currentIndex) =>
+      accumulator + (currentIndex + 1) + " - " + description + "\n",
+    "Here is a description of each column:\n"
+  );
+
+  templateContent = templateContent.replace(
+    "# Column headers here",
+    `${columnHeaders}`
+  );
+  templateContent = templateContent.replace(
+    "# Column descriptions here",
+    `${columnDesc}`
+  );
+
+  const rowHeaders = rowCategories
+    ?.map(({ name }) => {
+      return `"${name}"`;
+    })
+    .join(", ");
+  const rowDesc = rowCategories?.reduce(
+    (accumulator, { description }, currentIndex) =>
+      accumulator + (currentIndex + 1) + " - " + description + "\n",
+    "Here is a description of each row:\n"
+  );
+
+  templateContent = templateContent.replace(
+    "# Row headers here",
+    `${rowHeaders}`
+  );
+  templateContent = templateContent.replace(
+    "# Row descriptions here",
+    `${rowDesc}`
   );
 
   // Write the updated template back

@@ -6,8 +6,8 @@ from agent_crawler import crawl_file
 from botocore.config import Config
 from strands import Agent, tool
 import boto3
-import os
 import json
+import os
 
 os.environ["MODEL_ID"] = "us.anthropic.claude-sonnet-4-20250514-v1:0"
 
@@ -63,25 +63,19 @@ def invoke(payload):
                                                 "type": "string",
                                                 "description": "The artifact name",
                                             },
-                                            "tier": {
+                                            "columns": {
                                                 "type": "string",
                                                 "enum": [
-                                                    # TODO
-                                                    "standard",
-                                                    "advanced",
-                                                    "premium",
+                                                    # Column headers here
                                                 ],
-                                                "description": "Required tier (standard/advanced/premium)",
+                                                "description": """# Column descriptions here""",
                                             },
-                                            "type": {
+                                            "rows": {
                                                 "type": "string",
-                                                "description": "Classification type (configuration/customization/feature)",
                                                 "enum": [
-                                                    # TODO
-                                                    "configuration",
-                                                    "customization",
-                                                    "feature",
+                                                    # Row headers here
                                                 ],
+                                                "description": """# Row descriptions here""",
                                             },
                                             "detailed_summary": {
                                                 "type": "string",
