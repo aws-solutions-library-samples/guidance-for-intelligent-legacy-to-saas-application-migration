@@ -19,15 +19,11 @@
 9. [Revisions](#revisions-optional)
 10. [Authors](#authors-optional)
 
-## Overview (required)
+## Overview
 
-1. Provide a brief overview explaining the what, why, or how of your Guidance. You can answer any one of the following to help you write this:
+The solution guidance aims to help customers create or use AI-powered tools to accelerate their migration assessment processes while providing transparency and justification for the decisions made.
 
-   - **Why did you build this Guidance?**
-   - **What problem does this Guidance solve?**
-
-2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture.
-   - To add a screenshot, create an ‘assets/images’ folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README.
+![Architecture.png](./assets/images/Architecture.png)
 
 ### Cost ( required )
 
@@ -53,111 +49,76 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon API Gateway | 1,000,000 REST API calls per month                             | $ 3.50month |
 | Amazon Cognito     | 1,000 active users per month without advanced security feature | $ 0.00      |
 
-## Prerequisites (required)
+## Prerequisites
 
-### Operating System (required)
+### Third-party tools
 
-- Talk about the base Operating System (OS) and environment that can be used to run or deploy this Guidance, such as _Mac, Linux, or Windows_. Include all installable packages or modules required for the deployment.
-- By default, assume Amazon Linux 2/Amazon Linux 2023 AMI as the base environment. All packages that are not available by default in AMI must be listed out. Include the specific version number of the package or module.
+- [Docker](https://www.docker.com/)
+- [pnpm](https://pnpm.io/)
 
-**Example:**
-“These deployment instructions are optimized to best work on **<Amazon Linux 2 AMI>**. Deployment in another OS may require additional steps.”
+### AWS account requirements
 
-- Include install commands for packages, if applicable.
-
-### Third-party tools (If applicable)
-
-_List any installable third-party tools required for deployment._
-
-### AWS account requirements (If applicable)
-
-_List out pre-requisites required on the AWS account if applicable, this includes enabling AWS regions, requiring ACM certificate._
-
-**Example:** “This deployment requires you have public ACM certificate available in your AWS account”
-
-**Example resources:**
-
-- ACM certificate
-- DNS record
-- S3 bucket
-- VPC
-- IAM role with specific permissions
-- Enabling a Region or service etc.
+- Create a [Bedrock Knowledge Base](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html) with documentation for your agents to use
 
 ### aws cdk bootstrap (if sample code has aws-cdk)
 
 <If using aws-cdk, include steps for account bootstrap for new cdk users.>
 
-**Example blurb:** “This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping....”
+This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping:
 
-### Service limits (if applicable)
+`cdk bootstrap`
 
-<Talk about any critical service limits that affect the regular functioning of the Guidance. If the Guidance requires service limit increase, include the service name, limit name and link to the service quotas page.>
+### Service limits
 
-### Supported Regions (if applicable)
+Bedrock quota limits may restrict you from larger workloads
 
-<If the Guidance is built for specific AWS Regions, or if the services used in the Guidance do not support all Regions, please specify the Region this Guidance is best suited for>
+### Supported Regions
 
-## Deployment Steps (required)
+Those with Bedrock support
 
-Deployment steps must be numbered, comprehensive, and usable to customers at any level of AWS expertise. The steps must include the precise commands to run, and describe the action it performs.
+## Deployment Steps
 
-- All steps must be numbered.
-- If the step requires manual actions from the AWS console, include a screenshot if possible.
-- The steps must start with the following command to clone the repo. `git clone xxxxxxx`
-- If applicable, provide instructions to create the Python virtual environment, and installing the packages using `requirement.txt`.
-- If applicable, provide instructions to capture the deployed resource ARN or ID using the CLI command (recommended), or console action.
+1. Clone the repo using command `git clone https://github.com/aws-solutions-library-samples/guidance-for-intelligent-legacy-to-saas-application-migration.git`
+2. cd to the repo folder `cd guidance-for-intelligent-legacy-to-saas-application-migration`
+3. Install packages in requirements using command `pnpm install`
+4. To make sure your aws account is bootstrapped run `pnpm cdk bootstrap`
+5. Run this command to deploy the stack `pnpm cdk deploy`
 
-**Example:**
+## Deployment Validation
 
-1. Clone the repo using command `git clone xxxxxxxxxx`
-2. cd to the repo folder `cd <repo-name>`
-3. Install packages in requirements using command `pip install requirement.txt`
-4. Edit content of **file-name** and replace **s3-bucket** with the bucket name in your account.
-5. Run this command to deploy the stack `cdk deploy`
-6. Capture the domain name created by running this CLI command `aws apigateway ............`
+- Open CloudFormation console and verify the status of the template with the name <b>MigrationMonitor</b>.
+- If deployment is successful, you should see an active AWS Amplify App with the name <b>MigrationMonitor</b> in the Amplify console.
+- After clicking into the Amplify App navigate to the published URL, which should open the webpage in another window
 
-## Deployment Validation (required)
+## Running the Guidance
 
-<Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
+1. Once you've navigated to the webpage you should be prompted with a login screen. You'll need to navigate to Amazon Cognito where you will register yourself as a user. Once you've completed registration on Cognito, use those same credentials to log into the app.
 
-**Examples:**
+2. After logging in you should see a jobs tab and a knowledge base tab. If there are no available Amazon Bedrock Knowledge Bases go to the AWS console and manually create one. This will be required later.
 
-- Open CloudFormation console and verify the status of the template with the name starting with xxxxxx.
-- If deployment is successful, you should see an active database instance with the name starting with <xxxxx> in the RDS console.
-- Run the following CLI command to validate the deployment: `aws cloudformation describe xxxxxxxxxxxxx`
+3. Create a job. Once created you will input the Knowledge Base to use as well as the code location to assess. Make sure you upload to a folder in the bucket named migrationmonitor-<region>-<account-id>-ui-storage. This must be in a folder but can be located anywhere in the S3 bucket. This will be the second required input on the webapp for a job.
 
-## Running the Guidance (required)
+4. After completing all the neccessary inputs, you will then have access to the Workflow Builder tab. This will be pre-populated with a template, but edit your agents and output as you see fit.
 
-<Provide instructions to run the Guidance with the sample data or input provided, and interpret the output received.>
+5. Once happy Create Workflow. This will transfer your inputs to code, once happy Build Workflow.
 
-This section should include:
+6. If successful you will then see an Assessment tab appear where you can navigate and trigger your assessment.
 
-- Guidance inputs
-- Commands to run
-- Expected output (provide screenshot if possible)
-- Output description
+7. Upon completion you'll see a table appear where you can click on each of the elements to learn why they were categorized that way.
 
-## Next Steps (required)
+## Next Steps
 
-Provide suggestions and recommendations about how customers can modify the parameters and the components of the Guidance to further enhance it according to their requirements.
+Learn the code, play around with the workflow builder to create more elaborate workflows and extract features you find useful from this guidance
 
-## Cleanup (required)
+## Cleanup
 
-- Include detailed instructions, commands, and console actions to delete the deployed Guidance.
-- If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
+You can destroy resources by running `pnpm cdk destroy` and navigating to AgentCore Runtime to make sure all agents have been deleted.
 
-## FAQ, known issues, additional considerations, and limitations (optional)
+## FAQ, known issues, additional considerations, and limitations
 
-**Examples:**
+- This Guidance creates a publicly hosted webpage
 
-- “This Guidance creates a public AWS bucket required for the use-case.”
-- “This Guidance created an Amazon SageMaker notebook that is billed per hour irrespective of usage.”
-- “This Guidance creates unauthenticated public API endpoints.”
-
-Provide a link to the _GitHub issues page_ for users to provide feedback.
-
-**Example:** _“For any feedback, questions, or suggestions, please use the issues tab under this repo.”_
+_“For any feedback, questions, or suggestions, please use the [issues tab](https://github.com/aws-solutions-library-samples/guidance-for-intelligent-legacy-to-saas-application-migration/issues) under this repo.”_
 
 ## Notices
 
