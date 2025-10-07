@@ -250,6 +250,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                 </Header>
 
                 <Table
+                  resizableColumns
                   contentDensity="compact"
                   columnDefinitions={[
                     {
@@ -291,7 +292,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                     ) ?? []),
                   ]}
                   items={getJobQuery.data?.getJob?.row?.L ?? []}
-                  variant="borderless"
+                  variant="embedded"
                   wrapLines
                 />
               </Container>
