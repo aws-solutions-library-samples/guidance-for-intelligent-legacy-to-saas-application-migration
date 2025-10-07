@@ -88,6 +88,7 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
                   loading={startDeployment.isPending}
                   onClick={async () => {
                     await startDeployment.mutateAsync({ jobId });
+                    await getJobQuery.refetch();
                     codebuildJob.refetch();
                   }}
                 >
