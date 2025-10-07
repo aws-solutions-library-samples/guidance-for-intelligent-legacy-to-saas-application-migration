@@ -1,13 +1,10 @@
-import { WorkflowVisualizerWrapper } from "../../../components/WorkflowVisualizer";
 import { Controller, useForm, type SubmitHandler } from "react-hook-form";
-import { ChatBubble, Avatar } from "@cloudscape-design/chat-components";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useGetS3Json } from "../../../hooks/useApi";
 import type { GetJobQuery } from "../../../API";
 import { MarkdownHooks } from "react-markdown";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { capitalize } from "lodash";
 import remarkGfm from "remark-gfm";
 import toast from "react-hot-toast";
 
@@ -23,10 +20,8 @@ import {
   Link,
   Spinner,
   Button,
-  ExpandableSection,
   Container,
   SpaceBetween,
-  StatusIndicator,
   Alert,
   Table,
   Modal,
@@ -65,8 +60,6 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
 
   const { control, handleSubmit } = useForm<SettingInputs>();
 
-  console.log(getJobQuery.data?.getJob?.row?.L);
-
   useEffect(() => {
     const tableMap = {};
 
@@ -88,23 +81,9 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
             },
           ];
         }
-
-        // const classificationIndex =
-        //   getJobQuery.data?.getJob?.row?.L?.findIndex(
-        //     (rows) =>
-        //       element.rows.toLowerCase() === rows?.SS?.[0]?.toLowerCase()
-        //   ) ?? -1;
-
-        // if (classificationIndex) {
-        //   assessmentTblData?.[classificationIndex]?.[element.columns]?.push({
-        //     name: element.artifact_name,
-        //     summary: element.detailed_summary || "",
-        //   });
-        // }
       }
     }
 
-    console.log(tableMap);
     setAssessmentTbl(tableMap);
   }, [assessment.data?.parse_results]);
 
@@ -264,7 +243,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
           </Alert>
         ) : (
           <>
-            {true && (
+            {assessmentTbl && (
               <Container className="mt-5 bg-[#FAF9F6]!">
                 <Header variant="h3">
                   <span className="text-black">Assessment Table</span>
@@ -275,26 +254,25 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                   columnDefinitions={[
                     {
                       header: null,
-                      cell: (item) => (
-                        console.log(name),
-                        console.log("name"),
-                        (
-                          <Box fontWeight="bold" className="text-black!">
-                            {item.name}
-                          </Box>
-                        )
+                      cell: (rowItem) => (
+                        <Box fontWeight="bold" className="text-black!">
+                          {rowItem.SS[0]}
+                        </Box>
                       ),
                     },
-                    ...(getJobQuery.data?.getJob?.column?.L?.map((item) => {
-                      return {
-                        header: (
-                          <span className="text-black">{item?.SS?.[0]}</span>
-                        ),
-                        cell: (item: any) => (
-                          <SpaceBetween size="xxxs">
-                            "hello"
-                            {/* {item.standard?.map(
-                              (feature: any, index: number) => (
+                    ...(getJobQuery.data?.getJob?.column?.L?.map(
+                      (columnItem) => {
+                        return {
+                          header: (
+                            <span className="text-black">
+                              {columnItem?.SS?.[0]}
+                            </span>
+                          ),
+                          cell: (rowItem) => (
+                            <SpaceBetween size="xxxs">
+                              {assessmentTbl[
+                                `${rowItem.SS[0]}${columnItem?.SS[0]}`
+                              ]?.map((feature, index: number) => (
                                 <Button
                                   formAction="none"
                                   variant="link"
@@ -305,67 +283,12 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                                 >
                                   {feature.name}
                                 </Button>
-                              )
-                            )} */}
-                          </SpaceBetween>
-                        ),
-                      };
-                    }) ?? []),
-
-                    // {
-                    //   id: "tcxStandard",
-                    //   header: <span className="text-black">TCX Standard</span>,
-                    //   cell: (item) => (
-                    //     <SpaceBetween size="xxxs">
-                    //       {item.standard?.map((feature, index) => (
-                    //         <Button
-                    //           formAction="none"
-                    //           variant="link"
-                    //           onClick={() => setSummaryWindow(feature.summary)}
-                    //           key={index}
-                    //         >
-                    //           {feature.name}
-                    //         </Button>
-                    //       ))}
-                    //     </SpaceBetween>
-                    //   ),
-                    // },
-                    // {
-                    //   id: "tcxAdvanced",
-                    //   header: <span className="text-black">TCX Advanced</span>,
-                    //   cell: (item) => (
-                    //     <SpaceBetween size="xxxs">
-                    //       {item.advanced?.map((feature, index) => (
-                    //         <Button
-                    //           formAction="none"
-                    //           variant="link"
-                    //           onClick={() => setSummaryWindow(feature.summary)}
-                    //           key={index}
-                    //         >
-                    //           {feature.name}
-                    //         </Button>
-                    //       ))}
-                    //     </SpaceBetween>
-                    //   ),
-                    // },
-                    // {
-                    //   id: "tcxPremium",
-                    //   header: <span className="text-black">TCX Premium</span>,
-                    //   cell: (item) => (
-                    //     <SpaceBetween size="xxxs">
-                    //       {item.premium?.map((feature, index) => (
-                    //         <Button
-                    //           formAction="none"
-                    //           variant="link"
-                    //           onClick={() => setSummaryWindow(feature.summary)}
-                    //           key={index}
-                    //         >
-                    //           {feature.name}
-                    //         </Button>
-                    //       ))}
-                    //     </SpaceBetween>
-                    //   ),
-                    // },
+                              ))}
+                            </SpaceBetween>
+                          ),
+                        };
+                      }
+                    ) ?? []),
                   ]}
                   items={getJobQuery.data?.getJob?.row?.L ?? []}
                   variant="borderless"
