@@ -62,8 +62,22 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
           actions={
             !!listS3.data?.items.length && (
               <SpaceBetween size="s" direction="horizontal">
-                <Button onClick={() => setNewFile(true)} iconName="add-plus" />
-                <Button onClick={() => setDelFile(true)} iconName="remove" />
+                <Button
+                  onClick={() => setNewFile(true)}
+                  iconName="add-plus"
+                  disabled={
+                    codebuildJob.data?.getCodeBuild?.buildStatus ==
+                    "IN_PROGRESS"
+                  }
+                />
+                <Button
+                  onClick={() => setDelFile(true)}
+                  iconName="remove"
+                  disabled={
+                    codebuildJob.data?.getCodeBuild?.buildStatus ==
+                    "IN_PROGRESS"
+                  }
+                />
                 <Button
                   formAction="none"
                   variant="primary"
@@ -72,7 +86,10 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
                     "IN_PROGRESS"
                   }
                   loading={startDeployment.isPending}
-                  onClick={() => startDeployment.mutate({ jobId })}
+                  onClick={async () => {
+                    await startDeployment.mutateAsync({ jobId });
+                    codebuildJob.refetch();
+                  }}
                 >
                   Build Workflow
                 </Button>
@@ -85,6 +102,10 @@ export const WorkflowBuilder = ({ getJobQuery }: IWorkflowBuilder) => {
                 <Button
                   onClick={() => setCreateTool(true)}
                   variant="inline-link"
+                  disabled={
+                    codebuildJob.data?.getCodeBuild?.buildStatus ==
+                    "IN_PROGRESS"
+                  }
                 >
                   <Avatar
                     iconName="add-plus"
