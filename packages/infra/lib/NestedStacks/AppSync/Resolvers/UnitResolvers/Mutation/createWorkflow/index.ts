@@ -124,7 +124,7 @@ def ${agentName}(query: str) -> str:
 
     specialized_agent = Agent(
         system_prompt="""${agent.systemPrompt}""",
-        tools=[s3_ls, s3_download],  # Add specific tools as needed
+        tools=[s3_ls, s3_download, retrieve],  # Add specific tools as needed
         model=model,
         callback_handler=capture_flow_callback("${agentName}")
     )

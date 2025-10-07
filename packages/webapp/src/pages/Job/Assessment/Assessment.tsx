@@ -138,6 +138,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                 onClick={() => {
                   describeExecution.refetch();
                   getJobQuery.refetch();
+                  assessment.refetch();
                 }}
                 iconName="refresh"
               />
@@ -287,17 +288,17 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                                   columnItem?.SS?.[0] ?? ""
                                 }`
                               ]?.map(
-                                (
-                                  feature: { name: string; summary: string },
-                                  index: number
-                                ) => (
+                                (feature: {
+                                  name: string;
+                                  summary: string;
+                                }) => (
                                   <Button
                                     formAction="none"
                                     variant="link"
                                     onClick={() =>
                                       setSummaryWindow(feature.summary)
                                     }
-                                    key={index}
+                                    key={feature.name}
                                   >
                                     {feature.name}
                                   </Button>

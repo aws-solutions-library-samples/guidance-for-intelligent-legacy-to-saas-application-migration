@@ -55,7 +55,7 @@ export class CodeBuild extends Construct {
               resources: [`arn:aws:ecr:${region}:${account}:repository/*`],
             }),
             new iam.PolicyStatement({
-              actions: ["ecr:GetAuthorizationToken"],
+              actions: ["ecr:GetAuthorizationToken", "bedrock:Retrieve"],
               resources: ["*"],
             }),
             new iam.PolicyStatement({

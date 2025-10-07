@@ -2,6 +2,7 @@ from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from callbacks import trace, capture_flow_callback
 from strands.models import BedrockModel
 from tools import s3_ls, s3_download
+from strands_tools import retrieve
 from agent_crawler import crawl_file
 from botocore.config import Config
 from strands import Agent, tool
@@ -36,6 +37,7 @@ agent = Agent(
 def invoke(payload):
     """Process user input and return a response"""
     # crawl_file("index.py")
+    os.environ["KNOWLEDGE_BASE_ID"] = payload["kbId"]
 
     response = {}
 

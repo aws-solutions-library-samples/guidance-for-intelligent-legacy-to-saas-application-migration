@@ -73,6 +73,7 @@ export class StepFunction extends Construct {
         agentcoreId: "{% $agentcoreId %}",
         s3Uri: "{% $s3Uri %}",
         jobId: "{% $jobId %}",
+        kbId: "{% $kbId %}",
       }),
     });
 
