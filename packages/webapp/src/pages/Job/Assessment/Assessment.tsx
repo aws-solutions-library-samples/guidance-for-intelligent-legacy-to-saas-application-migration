@@ -38,6 +38,11 @@ type SettingInputs = {
   streaming: boolean;
 };
 
+type RowItem = {
+  __typename: "StringSet";
+  SS?: (string | null)[] | null;
+} | null;
+
 interface IAssessment {
   getJobQuery: UseQueryResult<GetJobQuery, Error>;
 }
@@ -55,26 +60,32 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
 
   const assessment = useGetS3Json(`jobs/${jobId}/assessment.json`);
 
-  const [assessmentTbl, setAssessmentTbl] = useState({});
+  const [assessmentTbl, setAssessmentTbl] = useState<
+    Record<string, Array<{ name: string; summary: string }>>
+  >({});
   const [summaryWindow, setSummaryWindow] = useState("");
 
   const { control, handleSubmit } = useForm<SettingInputs>();
 
   useEffect(() => {
-    const tableMap = {};
+    const tableMap: Record<
+      string,
+      Array<{ name: string; summary: string }>
+    > = {};
 
     if (
       assessment.data?.parse_results &&
       Array.isArray(assessment.data.parse_results)
     ) {
       for (const element of assessment.data.parse_results) {
-        if (Array.isArray(tableMap[`${element.rows}${element.columns}`])) {
-          tableMap[`${element.rows}${element.columns}`].push({
+        const key = `${element.rows}${element.columns}`;
+        if (Array.isArray(tableMap[key])) {
+          tableMap[key].push({
             name: element.artifact_name,
             summary: element.detailed_summary || "",
           });
         } else {
-          tableMap[`${element.rows}${element.columns}`] = [
+          tableMap[key] = [
             {
               name: element.artifact_name,
               summary: element.detailed_summary || "",
@@ -255,9 +266,9 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                   columnDefinitions={[
                     {
                       header: null,
-                      cell: (rowItem) => (
+                      cell: (rowItem: RowItem) => (
                         <Box fontWeight="bold" className="text-black!">
-                          {rowItem.SS[0]}
+                          {rowItem?.SS?.[0] || ""}
                         </Box>
                       ),
                     },
@@ -269,22 +280,29 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                               {columnItem?.SS?.[0]}
                             </span>
                           ),
-                          cell: (rowItem) => (
+                          cell: (rowItem: RowItem) => (
                             <SpaceBetween size="xxxs">
                               {assessmentTbl[
-                                `${rowItem.SS[0]}${columnItem?.SS[0]}`
-                              ]?.map((feature, index: number) => (
-                                <Button
-                                  formAction="none"
-                                  variant="link"
-                                  onClick={() =>
-                                    setSummaryWindow(feature.summary)
-                                  }
-                                  key={index}
-                                >
-                                  {feature.name}
-                                </Button>
-                              ))}
+                                `${rowItem?.SS?.[0] ?? ""}${
+                                  columnItem?.SS?.[0] ?? ""
+                                }`
+                              ]?.map(
+                                (
+                                  feature: { name: string; summary: string },
+                                  index: number
+                                ) => (
+                                  <Button
+                                    formAction="none"
+                                    variant="link"
+                                    onClick={() =>
+                                      setSummaryWindow(feature.summary)
+                                    }
+                                    key={index}
+                                  >
+                                    {feature.name}
+                                  </Button>
+                                )
+                              )}
                             </SpaceBetween>
                           ),
                         };
