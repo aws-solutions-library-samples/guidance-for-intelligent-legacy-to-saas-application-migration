@@ -123,6 +123,14 @@ export type CodeBuildDetails = {
   buildStatus?: string | null,
 };
 
+export type DescribeExecution = {
+  __typename: "DescribeExecution",
+  status?: string | null,
+  error?: string | null,
+  cause?: string | null,
+  buildStatus?: string | null,
+};
+
 export type InferenceProfileConnection = {
   __typename: "InferenceProfileConnection",
   inferenceProfileSummaries?:  Array<InferenceProfile > | null,
@@ -400,7 +408,13 @@ export type DescribeExecutionQueryVariables = {
 };
 
 export type DescribeExecutionQuery = {
-  describeExecution?: string | null,
+  describeExecution?:  {
+    __typename: "DescribeExecution",
+    status?: string | null,
+    error?: string | null,
+    cause?: string | null,
+    buildStatus?: string | null,
+  } | null,
 };
 
 export type ListInferenceProfilesQueryVariables = {

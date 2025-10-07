@@ -126,6 +126,13 @@ type CodeBuildDetails {
   buildStatus: String
 }
 
+type DescribeExecution {
+  status: String
+  error: String
+  cause: AWSJSON
+  buildStatus: String
+}
+
 type Query {
   getDashboardMetrics: DashboardMetrics
   listKnowledgeBases: KnowledgeBaseConnection
@@ -133,7 +140,7 @@ type Query {
   getJob(jobId: ID): Job
 
   getCodeBuild(codebuildArn: String): CodeBuildDetails
-  describeExecution(executionArn: String!): AWSJSON
+  describeExecution(executionArn: String!): DescribeExecution
   listInferenceProfiles: InferenceProfileConnection
 }
 

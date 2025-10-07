@@ -79,12 +79,6 @@ interface AssessmentTableRow {
   premium: { name: string; summary: string }[];
 }
 
-interface ExecutionStatus {
-  status?: string;
-  error?: string;
-  cause?: string;
-}
-
 type SettingInputs = {
   model: {
     label: string;
@@ -115,12 +109,6 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
 
   const [assessmentTbl, setAssessmentTbl] = useState<AssessmentTableRow[]>([]);
   const [summaryWindow, setSummaryWindow] = useState("");
-
-  // Parse execution status safely
-  const executionStatus: ExecutionStatus = describeExecution.data
-    ?.describeExecution
-    ? JSON.parse(describeExecution.data.describeExecution)
-    : {};
 
   const { control, handleSubmit } = useForm<SettingInputs>();
 
@@ -213,7 +201,8 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                   !getJobQuery.data?.getJob?.kb ||
                   !getJobQuery.data?.getJob?.s3Uri ||
                   !getJobQuery.data?.getJob?.agentcoreId ||
-                  executionStatus.status === "RUNNING"
+                  describeExecution.data?.describeExecution?.status ===
+                    "RUNNING"
                 }
               >
                 Start Assessment
@@ -318,7 +307,8 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                   <Spinner />
                 ) : (
                   <pre className="whitespace-pre-wrap">
-                    {executionStatus.status || "Unknown"}
+                    {describeExecution.data?.describeExecution?.status ||
+                      "Unknown"}
                   </pre>
                 ),
               },
@@ -326,25 +316,15 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
           />
         )}
 
-        {!(
-          JSON.parse(describeExecution.data?.describeExecution ?? "{}")
-            .status === "RUNNING"
-        ) &&
-        JSON.parse(describeExecution.data?.describeExecution ?? "{}").status ===
-          "FAILED" ? (
+        {!(describeExecution.data?.describeExecution?.status === "RUNNING") &&
+        describeExecution.data?.describeExecution?.status === "FAILED" ? (
           <Alert
             className="mt-5"
             type="error"
-            header={
-              JSON.parse(describeExecution.data?.describeExecution ?? "{}")
-                .error
-            }
+            header={describeExecution.data?.describeExecution.error}
           >
             <pre className="whitespace-pre-wrap">
-              {
-                JSON.parse(describeExecution.data?.describeExecution ?? "{}")
-                  .cause
-              }
+              {describeExecution.data?.describeExecution.cause}
             </pre>
           </Alert>
         ) : (

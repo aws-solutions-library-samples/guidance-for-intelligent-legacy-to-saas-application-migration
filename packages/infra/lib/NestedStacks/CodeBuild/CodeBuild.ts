@@ -29,11 +29,6 @@ export class CodeBuild extends Construct {
 
     const { stackName, region, account } = cdk.Stack.of(this);
 
-    const logGroup = new logs.LogGroup(this, "ECS Log Group", {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      retention: logs.RetentionDays.ONE_DAY,
-    });
-
     this.ecrRepository = new ecr.Repository(this, "ECR Repository", {
       repositoryName: stackName.toLowerCase(),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -84,6 +79,7 @@ export class CodeBuild extends Construct {
         }),
       },
     });
+    uiStorageBucket.grantReadWrite(agentcoreExecutionRole);
 
     this.codeBuildProject = new cb.Project(this, "CodeBuild Project", {
       projectName: `${stackName}-Deployment`,
@@ -113,9 +109,6 @@ export class CodeBuild extends Construct {
           },
           AGENTCORE_ROLE_ARN: {
             value: agentcoreExecutionRole.roleArn,
-          },
-          LOG_GROUP_NAME: {
-            value: logGroup.logGroupName,
           },
         },
       },
@@ -217,17 +210,6 @@ export class CodeBuild extends Construct {
       new iam.PolicyStatement({
         actions: ["*"],
         resources: ["*"],
-      })
-    );
-
-    this.codeBuildProject.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-        ],
-        resources: [`${logGroup.logGroupArn}*`],
       })
     );
 

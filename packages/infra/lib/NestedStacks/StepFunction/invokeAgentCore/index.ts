@@ -8,7 +8,6 @@ const client = new BedrockAgentCoreClient({});
 
 type InvokeEvent = {
   agentcoreId: string;
-  payload: any;
 };
 
 export const handler = async (event: InvokeEvent, context: Context) => {

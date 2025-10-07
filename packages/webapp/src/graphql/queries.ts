@@ -115,7 +115,13 @@ export const getCodeBuild = /* GraphQL */ `query GetCodeBuild($codebuildArn: Str
   APITypes.GetCodeBuildQuery
 >;
 export const describeExecution = /* GraphQL */ `query DescribeExecution($executionArn: String!) {
-  describeExecution(executionArn: $executionArn)
+  describeExecution(executionArn: $executionArn) {
+    status
+    error
+    cause
+    buildStatus
+    __typename
+  }
 }
 ` as GeneratedQuery<
   APITypes.DescribeExecutionQueryVariables,

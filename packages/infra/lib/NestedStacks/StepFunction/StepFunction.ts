@@ -55,7 +55,7 @@ export class StepFunction extends Construct {
     const triggerFn = new nodejs.NodejsFunction(this, "Trigger AgentCore Fn", {
       entry: __dirname + "/invokeAgentCore/index.ts",
       runtime: lambda.Runtime.NODEJS_22_X,
-      timeout: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.minutes(15),
       initialPolicy: [
         new iam.PolicyStatement({
           actions: ["bedrock-agentcore:InvokeAgentRuntime"],
@@ -71,7 +71,8 @@ export class StepFunction extends Construct {
       payloadResponseOnly: true,
       payload: sfn.TaskInput.fromObject({
         agentcoreId: "{% $agentcoreId %}",
-        s3Uri: "{% $states.input.Item.s3Uri.S %}",
+        s3Uri: "{% $s3Uri %}",
+        jobId: "{% $jobId %}",
       }),
     });
 

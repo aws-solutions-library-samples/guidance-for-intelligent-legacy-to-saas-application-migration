@@ -53,19 +53,20 @@ def invoke(payload):
                         "json": {
                             "type": "object",
                             "properties": {
-                                "teamcenter_artifacts": {
+                                "parse_results": {
                                     "type": "array",
-                                    "description": "List of all TeamCenter artifacts identified in the analysis",
+                                    "description": "Categorize each artifact in the analysis",
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "teamcenter_artifact_name": {
+                                            "artifact_name": {
                                                 "type": "string",
-                                                "description": "The exact TeamCenter artifact name",
+                                                "description": "The artifact name",
                                             },
                                             "tier": {
                                                 "type": "string",
                                                 "enum": [
+                                                    # TODO
                                                     "standard",
                                                     "advanced",
                                                     "premium",
@@ -76,6 +77,7 @@ def invoke(payload):
                                                 "type": "string",
                                                 "description": "Classification type (configuration/customization/feature)",
                                                 "enum": [
+                                                    # TODO
                                                     "configuration",
                                                     "customization",
                                                     "feature",
@@ -87,7 +89,7 @@ def invoke(payload):
                                             },
                                         },
                                         "required": [
-                                            "teamcenter_artifact_name",
+                                            "artifact_name",
                                             "tier",
                                             "type",
                                             "detailed_summary",
@@ -95,9 +97,7 @@ def invoke(payload):
                                     },
                                 },
                             },
-                            "required": [
-                                "teamcenter_artifacts",
-                            ],
+                            "required": ["parse_results"],
                         }
                     },
                 }
@@ -132,17 +132,15 @@ You MUST use the parse_results tool to structure your response - do not provide 
     print("Saving...")
     s3_client.put_object(
         Bucket=os.environ["S3_BUCKET_NAME"],
-        Key=f"jobs/{os.environ['JOB_ID']}/assessment.json",
+        Key=f"jobs/{payload['jobId']}/assessment.json",
         Body=json.dumps(
-            parsed_results["output"]["message"]["content"][0]["toolUse"]["input"][
-                "parse_results"
-            ]
+            parsed_results["output"]["message"]["content"][0]["toolUse"]["input"]
         ),
     )
 
     s3_client.put_object(
         Bucket=os.environ["S3_BUCKET_NAME"],
-        Key=f"jobs/{os.environ['JOB_ID']}/flow.json",
+        Key=f"jobs/{payload['jobId']}/flow.json",
         Body=json.dumps(trace),
     )
 
