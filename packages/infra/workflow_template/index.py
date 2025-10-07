@@ -1,8 +1,8 @@
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from callbacks import trace, capture_flow_callback
+from strands_tools import retrieve, file_read
 from strands.models import BedrockModel
 from tools import s3_ls, s3_download
-from strands_tools import retrieve
 from agent_crawler import crawl_file
 from botocore.config import Config
 from strands import Agent, tool
