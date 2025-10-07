@@ -240,12 +240,12 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
         </Header>
 
         <KeyValuePairs
-          columns={1}
+          columns={2}
           items={[
             {
               label: (
                 <h3 className="my-1 text-sm font-medium text-[#a0a0a0] flex items-center">
-                  Bedrock AgentCore Definition
+                  Bedrock AgentCore
                 </h3>
               ),
               value: (
@@ -257,7 +257,26 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                     getJobQuery.data?.getJob?.agentcoreId
                   }`}
                 >
-                  {getJobQuery.data?.getJob?.agentcoreId}
+                  Definition
+                </Link>
+              ),
+            },
+            {
+              label: (
+                <h3 className="my-1 text-sm font-medium text-[#a0a0a0] flex items-center">
+                  AgentCore Logs
+                </h3>
+              ),
+              value: (
+                <Link
+                  external
+                  href={`https://${
+                    import.meta.env.VITE_REGION
+                  }.console.aws.amazon.com/cloudwatch/home#logsV2:log-groups/log-group/$252Faws$252Fbedrock-agentcore$252Fruntimes$252F${
+                    getJobQuery.data?.getJob?.agentcoreId
+                  }-DEFAULT`}
+                >
+                  Cloudwatch
                 </Link>
               ),
             },
@@ -285,7 +304,7 @@ export const Assessment = ({ getJobQuery }: IAssessment) => {
                       getJobQuery.data?.getJob?.executionArn
                     }`}
                   >
-                    {getJobQuery.data?.getJob?.executionArn}
+                    Execution
                   </Link>
                 ),
               },
