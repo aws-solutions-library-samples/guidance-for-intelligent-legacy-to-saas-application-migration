@@ -192,24 +192,18 @@ export class CodeBuild extends Construct {
 
     this.codeBuildProject.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:PutImage",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-        ],
-        resources: ["*"],
+        actions: ["iam:PassRole"],
+        resources: [agentcoreExecutionRole.roleArn],
       })
     );
 
     this.codeBuildProject.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ["*"],
-        resources: ["*"],
+        actions: [
+          "bedrock-agentcore:CreateAgentRuntime",
+          "bedrock-agentcore:UpdateAgentRuntime",
+        ],
+        resources: [`arn:aws:bedrock-agentcore:${region}:${account}:runtime/*`],
       })
     );
 
