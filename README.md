@@ -2,10 +2,12 @@
 
 ## Table of Contents
 
-1. [Overview](#overview-required)
+1. [Overview](#overview)
    - [Cost](#cost)
-2. [Prerequisites](#prerequisites-required)
-   - [Operating System](#operating-system-required)
+2. [Prerequisites](#prerequisites)
+   - [Libraries](#libraries)
+   - [AWS account requirements](#aws-account-requirements)
+   - [cdk bootstrap](#cdk-bootstrap)
 3. [Deployment Steps](#deployment-steps-required)
 4. [Deployment Validation](#deployment-validation-required)
 5. [Running the Guidance](#running-the-guidance-required)
@@ -25,7 +27,7 @@ The solution guidance aims to help customers create or use AI-powered tools to a
 
 ![Architecture.png](./assets/images/Architecture.png)
 
-### Cost ( required )
+### Cost
 
 This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
 
@@ -51,7 +53,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ## Prerequisites
 
-### Third-party tools
+### Libraries
 
 - [Docker](https://www.docker.com/)
 - [pnpm](https://pnpm.io/)
@@ -60,9 +62,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 - Create a [Bedrock Knowledge Base](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html) with documentation for your agents to use
 
-### aws cdk bootstrap (if sample code has aws-cdk)
-
-<If using aws-cdk, include steps for account bootstrap for new cdk users.>
+### aws cdk bootstrap
 
 This Guidance uses aws-cdk. If you are using aws-cdk for first time, please perform the below bootstrapping:
 
