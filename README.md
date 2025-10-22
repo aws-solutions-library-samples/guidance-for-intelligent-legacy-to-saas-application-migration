@@ -96,7 +96,7 @@ Those with Bedrock support
 
 2. After logging in you should see a jobs tab and a knowledge base tab. If there are no available Amazon Bedrock Knowledge Bases go to the AWS console and manually create one. This will be required later.
 
-3. Create a job. Once created you will input the Knowledge Base to use as well as the code location to assess. Make sure you upload to a folder in the bucket named migrationmonitor-<region>-<account-id>-ui-storage. This must be in a folder but can be located anywhere in the S3 bucket. This will be the second required input on the webapp for a job.
+3. Create a job. Once created you will input the Knowledge Base to use as well as the code location to assess. Make sure you upload to a folder in the bucket named migrationmonitor-[region]-[account-id]-ui-storage. This must be in a folder but can be located anywhere in the S3 bucket. This will be the second required input on the webapp for a job.
 
 4. After completing all the neccessary inputs, you will then have access to the Workflow Builder tab. This will be pre-populated with a template, but edit your agents and output as you see fit.
 
