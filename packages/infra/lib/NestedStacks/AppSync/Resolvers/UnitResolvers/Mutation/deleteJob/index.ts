@@ -22,11 +22,9 @@ export const handler = async (event: IHandler) => {
     Key: { jobId },
   });
 
-  if (Item?.agentcoreId.S) {
+  if (Item?.agentcoreId) {
     await agentcoreClient.send(
-      new DeleteAgentRuntimeCommand({
-        agentRuntimeId: Item?.agentcoreId.S,
-      })
+      new DeleteAgentRuntimeCommand({ agentRuntimeId: Item.agentcoreId })
     );
   }
 

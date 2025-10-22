@@ -2,7 +2,6 @@ import * as cdk from "aws-cdk-lib";
 
 import * as cb from "aws-cdk-lib/aws-codebuild";
 import * as ddb from "aws-cdk-lib/aws-dynamodb";
-import * as logs from "aws-cdk-lib/aws-logs";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as kms from "aws-cdk-lib/aws-kms";
@@ -202,8 +201,18 @@ export class CodeBuild extends Construct {
         actions: [
           "bedrock-agentcore:CreateAgentRuntime",
           "bedrock-agentcore:UpdateAgentRuntime",
+          "bedrock-agentcore:CreateAgentRuntimeEndpoint",
         ],
         resources: [`arn:aws:bedrock-agentcore:${region}:${account}:runtime/*`],
+      })
+    );
+
+    this.codeBuildProject.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ["bedrock-agentcore:CreateWorkloadIdentity"],
+        resources: [
+          `arn:aws:bedrock-agentcore:${region}:${account}:workload-identity-directory/*`,
+        ],
       })
     );
 

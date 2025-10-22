@@ -233,6 +233,14 @@ export class UnitResolvers extends Construct {
           actions: ["dynamodb:DeleteItem"],
           resources: [this.ddbTable.tableArn],
         }),
+        new iam.PolicyStatement({
+          actions: ["bedrock-agentcore:DeleteAgentRuntime"],
+          resources: [
+            `arn:aws:bedrock-agentcore:${cdk.Stack.of(this).region}:${
+              cdk.Stack.of(this).account
+            }:runtime/*`,
+          ],
+        }),
       ],
       environment: {
         tableName: this.ddbTable.tableName,
@@ -247,7 +255,7 @@ export class UnitResolvers extends Construct {
     this.createResolver(typeName, fieldName, ds);
 
     NagSuppressions.addResourceSuppressions(
-      ds,
+      [ds, deleteJobFn],
       [
         {
           id: "AwsSolutions-IAM5",
