@@ -29,27 +29,25 @@ The solution guidance aims to help customers create or use AI-powered tools to a
 
 ### Cost
 
-This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
+_You are responsible for the cost of the AWS services used while running this Guidance. As of October 2025, the cost for running this Guidance with the default settings in the US East (N. Virginia) is approximately $1.48 per month for processing ( 100 jobs )._
 
-Start this section with the following boilerplate text:
-
-_You are responsible for the cost of the AWS services used while running this Guidance. As of <month> <year>, the cost for running this Guidance with the default settings in the <Default AWS Region (Most likely will be US East (N. Virginia)) > is approximately $<n.nn> per month for processing ( <nnnnn> records )._
-
-Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving resonable number of requests/entities.
-
-Suggest you keep this boilerplate text:
 _We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
 
-### Sample Cost Table ( required )
-
-**Note : Once you have created a sample cost table using AWS Pricing Calculator, copy the cost breakdown to below table and upload a PDF of the cost estimation on BuilderSpace. Do not add the link to the pricing calculator in the ReadMe.**
+### Sample Cost Table
 
 The following table provides a sample cost breakdown for deploying this Guidance with the default parameters in the US East (N. Virginia) Region for one month.
 
-| AWS service        | Dimensions                                                     | Cost [USD]  |
-| ------------------ | -------------------------------------------------------------- | ----------- |
-| Amazon API Gateway | 1,000,000 REST API calls per month                             | $ 3.50month |
-| Amazon Cognito     | 1,000 active users per month without advanced security feature | $ 0.00      |
+| AWS service                        | Dimensions                                                      | Cost [USD] |
+| ---------------------------------- | --------------------------------------------------------------- | ---------- |
+| AWS Amplify                        | 10 build minutes storing 1 GB and serving 1 GB                  | $ 0.27     |
+| Amazon Simple Storage Service (S3) | 5GB standard per month                                          | $ 0.12     |
+| Amazon Cognito                     | 1 active users per month with advanced security feature         | $ 0.05     |
+| AWS AppSync                        | 100 thousand requests                                           | $ 0.40     |
+| AWS CodeBuild                      | 20 builds per month of 5 minute builds (arm1.small)             | $ 0.34     |
+| Amazon Bedrock AgentCore           | 100 sessions of 30 seconds each 40% wait time 1 vCPU 1GB memory | $ 0.05     |
+| AWS Step Functions                 | 100 per month with 4 steps                                      | $ 0.00     |
+| Amazon DynamoDB                    | 1GB stored with records 1kb each                                | $ 0.00     |
+| AWS Lambda                         | 1,000 requests with 100 seconds each (1024 mb memory)           | $ 0.00     |
 
 ## Prerequisites
 
