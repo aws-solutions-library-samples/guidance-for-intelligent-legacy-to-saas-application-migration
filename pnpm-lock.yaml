@@ -57,8 +57,8 @@ importers:
         specifier: ~5.9.2
         version: 5.9.2
       uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^14.0.0
+        version: 14.0.0
 
   packages/webapp:
     dependencies:
@@ -3901,7 +3901,7 @@ packages:
   tar@7.4.3:
     resolution: {integrity: sha512-5S7Va8hKfV7W5U6g3aYxXmlPoZVAwUMy9AOKyF2fVuZa2UD3qZjg578OrLRt8PcNN1PleVaL/5/yYATNL0ICUw==}
     engines: {node: '>=18'}
-    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
@@ -4024,16 +4024,17 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  uuid@11.1.0:
-    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+  uuid@11.1.1:
+    resolution: {integrity: sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==}
     hasBin: true
 
-  uuid@13.0.0:
-    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
     hasBin: true
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -4186,7 +4187,7 @@ snapshots:
       graphql: 15.8.0
       rxjs: 7.8.2
       tslib: 2.8.1
-      uuid: 11.1.0
+      uuid: 11.1.1
 
   '@aws-amplify/api-rest@4.3.0(@aws-amplify/core@6.13.1)':
     dependencies:
@@ -4218,7 +4219,7 @@ snapshots:
       js-cookie: 3.0.5
       rxjs: 7.8.2
       tslib: 2.8.1
-      uuid: 11.1.0
+      uuid: 11.1.1
 
   '@aws-amplify/data-schema-types@1.2.0':
     dependencies:
@@ -9689,9 +9690,9 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  uuid@11.1.0: {}
+  uuid@11.1.1: {}
 
-  uuid@13.0.0: {}
+  uuid@14.0.0: {}
 
   uuid@9.0.1: {}
 
