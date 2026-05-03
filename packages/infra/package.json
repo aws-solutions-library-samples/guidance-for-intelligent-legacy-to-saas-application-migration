@@ -19,7 +19,7 @@
     "aws-cdk": "2.1027.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-amplify-alpha": "2.214.0-alpha.0",
